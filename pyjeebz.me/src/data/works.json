@@ -1,0 +1,42 @@
+[
+  {
+    "title": "PreScale",
+    "tech": "Python, FastAPI, Uvicorn, Node.js, Vue.js, Docker, Kubernetes, Helm 3, Terraform, GCP, GKE, Cloud SQL, Redis, Prometheus, Grafana",
+    "description": "ML-powered infrastructure intelligence platform that shifts monitoring from reactive to proactive prediction. Uses machine learning to forecast traffic, detect anomalies, and optimize resource scaling — before your users notice a thing.",
+    "image": "prescale.png",
+    "repo": "https://github.com/pyjeebz/PreScale",
+    "repoLabel": "Github Repository",
+    "buttonClass": "",
+    "link": "https://prescale.dev/"
+  },
+  {
+    "title": "Predict - Predictive Auto-Scaling",
+    "tech": "Python, Terraform, AWS EC2, Lambda, CloudWatch, ALB, RDS, ElastiCache, Docker, Saleor, Locust, scikit-learn, pandas, numpy",
+    "description": "Intelligent auto-scaling system that uses Machine Learning to predict traffic surges on an e-commerce website and proactively scales EC2 instances using AWS Auto Scaling. Learns from historical CloudWatch metrics to predict future load and adjusts infrastructure before demand spikes occur.",
+    "image": "predict.png",
+    "repo": "https://github.com/pyjeebz/predict",
+    "repoLabel": "Github Repository",
+    "buttonClass": "",
+    "link": ""
+  },
+  {
+    "title": "AI Image Label Detector",
+    "tech": "Python, AWS Lambda, Amazon S3, Amazon Rekognition, Amazon SNS, CloudWatch, boto3, AWS CLI",
+    "description": "Serverless image processing pipeline using AWS Lambda triggered by S3 uploads. Uses Amazon Rekognition to detect labels and objects in images, then publishes notifications via SNS. Fully event-driven architecture with CloudWatch logging.",
+    "image": "ai-image-label-detector.png",
+    "repo": "https://github.com/pyjeebz/ai-image-label-detector",
+    "repoLabel": "Github Repository",
+    "buttonClass": "hide-button-class",
+    "link": ""
+  },
+  {
+    "title": "More Projects",
+    "tech": "More Tech Stacks",
+    "description": "Most of my projects are found on my GitHub profile.",
+    "image": "",
+    "repo": "https://github.com/pyjeebz/",
+    "repoLabel": "Github Profile",
+    "buttonClass": "hide-button-class",
+    "link": ""
+  }
+]
