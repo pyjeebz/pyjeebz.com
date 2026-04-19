@@ -1,6 +1,8 @@
 import { ArticleCard } from "./article-card";
-import articlesData from "@/data/articles.json";
+import articlesDataRaw from "@/data/articles.json";
 import type { Article } from "@/types";
+
+const articlesData = articlesDataRaw as Article[];
 
 export function ArticleContainer() {
   // Sort articles by date (newest first)

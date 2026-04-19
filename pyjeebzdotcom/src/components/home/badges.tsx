@@ -1,5 +1,13 @@
 import Image from "next/image";
-import badgesData from "@/data/badges.json";
+import badgesDataRaw from "@/data/badges.json";
+
+interface Badge {
+  imageUrl: string;
+  altText: string;
+  linkUrl: string;
+}
+
+const badgesData = badgesDataRaw as Badge[];
 
 export const Badges: React.FC = () => {
   return (

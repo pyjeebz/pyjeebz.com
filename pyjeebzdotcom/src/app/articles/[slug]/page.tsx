@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { ArticleReader } from "@/components/articles/article-reader";
-import articlesData from "@/data/articles.json";
+import articlesDataRaw from "@/data/articles.json";
+import type { Article } from "@/types/article";
+
+const articlesData = articlesDataRaw as Article[];
 import { promises as fs } from "fs";
 import path from "path";
 import type { Metadata } from "next";
