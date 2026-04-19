@@ -1,0 +1,7 @@
+# Modern browsers that support ES2020+
+# This reduces legacy JavaScript polyfills
+> 0.5%
+last 2 versions
+not dead
+not IE 11
+not op_mini all
