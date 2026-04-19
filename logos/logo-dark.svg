@@ -1,0 +1,42 @@
+
+<svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4A0E4E" />
+      <stop offset="50%" stop-color="#7C3AED" />
+      <stop offset="100%" stop-color="#FF8A65" />
+    </linearGradient>
+    <linearGradient id="glassGradBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.3" />
+    </linearGradient>
+    <linearGradient id="glassGradNoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+    </linearGradient>
+  </defs>
+  
+    <g transform="translate(0, 0)">
+      
+  <rect x="5" y="5" width="110" height="110" rx="32" fill="url(#brandGrad)" />
+  <path 
+    d="M 38 82 V 38 C 38 24, 72 24, 72 48 C 72 68, 38 72, 38 72" 
+    stroke="url(#glassGradBg)" 
+    stroke-width="11" 
+    stroke-linecap="round" 
+    stroke-linejoin="round" 
+  />
+  <path 
+    d="M 58 52 C 58 52, 82 52, 82 66 C 82 88, 58 92, 48 82" 
+    stroke="url(#glassGradBg)" 
+    stroke-width="11" 
+    stroke-linecap="round" 
+    stroke-linejoin="round" 
+  />
+
+    </g>
+    <text x="140" y="82" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="72px" letter-spacing="-4px" fill="#ffffff">
+      pyjeebz
+    </text>
+  
+</svg>
