@@ -5,15 +5,20 @@ export function Blurb() {
     <div className="px-4">
       <div className="space-y-4">
         <Paragraph>
-          I&apos;m an engineer with an architect&apos;s flair. Currently
-          experimenting on how infrastructure intelligence can shift from
-          reactive monitoring to proactive prediction. I recently graduated from
-          St. Clair College as a Networking major.
+          Hi, I&apos;m Mujeeb — also known as pyjeebz.
         </Paragraph>
         <Paragraph>
-          I am also an explorer. I love to try and explore new things.
+          I&apos;m an architect and engineer focused on building predictive infrastructure systems that help teams move from reacting to anticipating. I turn raw infrastructure data into intelligent signals, enabling better scaling decisions, reducing waste, and improving reliability before issues surface.
         </Paragraph>
-        <Paragraph>Here are my experiences laid out.</Paragraph>
+        <Paragraph>
+          My foundation is in cloud and distributed systems, but my focus is broader: how intelligent software is designed, operationalized, and shipped at scale. I think in systems, not just components, and care deeply about the trade-offs between performance, cost, and developer experience.
+        </Paragraph>
+        <Paragraph>
+          I build tools that give infrastructure teams foresight, not just visibility.
+        </Paragraph>
+        <Paragraph>
+          I&apos;m also co-founding AssemblyHQ — <i>a builders collective that thinks, makes, and ships.</i>
+        </Paragraph>
       </div>
     </div>
   );
