@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About - Mujeeb Lawal-Saka",
   description:
-    "Mujeeb Lawal-Saka is an engineer with an architect's flair. Founder of AssemblyHQ, building PreScale. St. Clair College Networking graduate.",
+    "Mujeeb Lawal-Saka is an engineer with an architect's flair. Founder of AssemblyHQ, interested inbuilding predictive infrastructure systems.",
 };
 
 export default function About() {
