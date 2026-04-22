@@ -1,20 +1,15 @@
-import { Badges } from "./badges";
-import Paragraph from "@/ui/paragraph";
-import Link from "next/link";
+import Image from "next/image";
 
 export function BadgeContainer() {
   return (
-    <div className="max-w-xl mx-auto my-4 px-4 home-page-content">
-      <Paragraph>
-        Here are a few{" "}
-        <Link href="https://en.wikipedia.org/wiki/Web_badge" target="_blank">
-          88x31px
-        </Link>{" "}
-        gif badges just for the fun of it:
-      </Paragraph>
-      <div className="my-4" />
-      <Badges />
-      <div className="my-4" />
+    <div className="max-w-xl mx-auto my-4 px-4 home-page-content flex justify-center pb-8 mt-12 w-full">
+      <Image
+        src="/badges/animated-signature.svg"
+        alt="Mujeeb Lawal-Saka Signature"
+        width={300}
+        height={200}
+        className="w-full max-w-[300px] h-auto"
+      />
     </div>
   );
 }
