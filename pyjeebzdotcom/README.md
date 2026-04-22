@@ -1,7 +1,6 @@
-# dundeezhangv5
+# pyjeebzdotcom
+This is the source code for my personal website, pyjeebz.com.
 
-[![CodeFactor](https://www.codefactor.io/repository/github/dundeezhang/dundeezhangv5/badge)](https://www.codefactor.io/repository/github/dundeezhang/dundeezhangv5)
+Inspired by https://github.com/dundeezhang
 
-Successor to [dundeezhangv4](https://old.dundeezhang.com). Brings in a more compact look with the same accents and design themes.
-
-Also switched to Next for SSR. Reduced portfolio loading size by half.
+Thanks for visiting! I guess.
