@@ -1,0 +1,39 @@
+@import url(https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap);
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  font-optical-sizing: auto;
+  background-color: #0c0b09;
+  color: #f5f2eb;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: rgba(124, 58, 237, 0.35);
+  color: #f5f2eb;
+}
+
+@keyframes footerDraw {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes footerFillIn {
+  0% {
+    fill: transparent;
+    stroke-width: 1.5;
+  }
+  100% {
+    fill: url(#footerGlow);
+    stroke-width: 0;
+  }
+}

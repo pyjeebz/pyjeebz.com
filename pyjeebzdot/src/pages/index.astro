@@ -1,0 +1,111 @@
+---
+import Projects from "../components/react/projects";
+import Layout from "../layouts/Layout.astro";
+import Footer from "../components/react/footer";
+
+const links = [
+  { title: "GitHub", url: "https://github.com/pyjeebz" },
+  { title: "X", url: "https://x.com/pyjeebz" },
+  { title: "Email", url: "mailto:lawalsakamujeeb@gmail.com" },
+  { title: "LinkedIn", url: "https://www.linkedin.com/in/mujeeb-lawal-saka/" },
+];
+---
+
+<Layout title="Mujeeb Lawal-Saka">
+  <header class="mb-16 sm:mb-20">
+    <h1
+      class="font-serif text-[clamp(2.125rem,8vw,3.25rem)] font-normal leading-[1.08] tracking-[-0.02em] mb-5"
+      style="background: linear-gradient(135deg, #4A0E4E, #7C3AED, #FF8A65); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+    >
+      Mujeeb Lawal-Saka
+    </h1>
+    <p
+      class="text-2xs uppercase tracking-[0.22em] text-muted mb-3 max-w-md leading-relaxed"
+    >
+      Software Engineer, Infrastructure · Canada
+    </p>
+    <p class="text-sm text-muted mb-10 max-w-md leading-relaxed">
+      Currently building
+      <a
+        href="https://prescale.dev"
+        target="_blank"
+        rel="noreferrer"
+        id="prescale-trigger"
+        class="text-off-white hover:text-accent transition-colors underline underline-offset-[5px] decoration-white/20 hover:decoration-accent/60"
+      >PreScale</a> — predictive autoscaling for cloud infrastructure.
+    </p>
+    <!-- Hover preview positioned outside the paragraph flow -->
+    <div id="prescale-preview" class="prescale-preview">
+      <img src="/prescale-preview.png" alt="PreScale website preview" />
+    </div>
+    <p class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
+      {
+        links.map((link, i) => (
+          <>
+            {i > 0 ? (
+              <span class="text-muted-faint/35 select-none text-xs" aria-hidden>
+                ·
+              </span>
+            ) : null}
+            <a
+              href={link.url}
+              target="_blank"
+              rel="noreferrer"
+              class="text-muted hover:text-accent underline-offset-[5px] decoration-white/20 hover:decoration-accent/60 underline transition-colors"
+            >
+              {link.title}
+            </a>
+          </>
+        ))
+      }
+    </p>
+  </header>
+  <Projects />
+  <Footer client:visible />
+</Layout>
+
+<style>
+  .prescale-preview {
+    position: fixed;
+    width: 340px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(124, 58, 237, 0.2);
+    border: 1px solid rgba(245, 242, 235, 0.1);
+    z-index: 999;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+    transform: translateY(8px) scale(0.95);
+  }
+  .prescale-preview.visible {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .prescale-preview img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    var trigger = document.getElementById('prescale-trigger');
+    var preview = document.getElementById('prescale-preview');
+    if (trigger && preview) {
+      trigger.addEventListener('mouseenter', function() {
+        var rect = trigger.getBoundingClientRect();
+        var previewH = 200;
+        preview.style.left = rect.left + 'px';
+        preview.style.top = (rect.top - previewH - 12) + 'px';
+        preview.classList.add('visible');
+      });
+      trigger.addEventListener('mouseleave', function() {
+        preview.classList.remove('visible');
+      });
+    }
+  });
+</script>

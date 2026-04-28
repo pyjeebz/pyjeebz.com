@@ -1,0 +1,35 @@
+---
+const currentPath = Astro.url.pathname;
+
+const pages = [
+  { title: "Home", href: "/" },
+  { title: "Blog", href: "/blog" },
+];
+---
+
+<nav
+  class="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 mb-14 sm:mb-16 text-2xs uppercase tracking-[0.18em] text-muted-faint"
+>
+  {
+    pages.map((page, i) => (
+      <>
+        {i > 0 ? (
+          <span class="text-muted-faint/25 select-none" aria-hidden>
+            /
+          </span>
+        ) : null}
+        <a
+          href={page.href}
+          class:list={[
+            "py-1 transition-colors",
+            currentPath === page.href
+              ? "text-off-white"
+              : "hover:text-muted",
+          ]}
+        >
+          {page.title}
+        </a>
+      </>
+    ))
+  }
+</nav>
