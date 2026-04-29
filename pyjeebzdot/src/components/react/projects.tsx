@@ -32,7 +32,7 @@ const Projects = () => {
       url: "https://github.com/pyjeebz/aws-resources-manager",
     },
     {
-      title: "maind",
+      title: "m/ai/nd",
       description: "Meta TRIBE v2 Brain Prediction Model (Testing).",
       url: "https://github.com/pyjeebz/maind",
     },
