@@ -9,6 +9,11 @@ function hostFromUrl(url: string): string {
 const Projects = () => {
   const projects = [
     {
+      title: "Breakwatch",
+      description: "Breakwatch detects breaking changes in OpenAPI specifications to help maintain API compatibility.",
+      url: "https://github.com/pyjeebz/breakwatch",
+    },
+    {
       title: "PreScale",
       description:
         "Predictive autoscaling for cloud infrastructure. Predict. Detect. Scale.",
@@ -30,11 +35,6 @@ const Projects = () => {
       description:
         "Automation tool to manage AWS services without manual console clicks.",
       url: "https://github.com/pyjeebz/aws-resources-manager",
-    },
-    {
-      title: "m/ai/nd",
-      description: "Meta TRIBE v2 Brain Prediction Model (Testing).",
-      url: "https://github.com/pyjeebz/maind",
     },
     {
       title: "pyjeebz.com",
