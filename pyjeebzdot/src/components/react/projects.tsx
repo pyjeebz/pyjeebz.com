@@ -9,6 +9,11 @@ function hostFromUrl(url: string): string {
 const Projects = () => {
   const projects = [
     {
+      title: "Statewatch",
+      description: "A dependency-aware drift detector for GCP.",
+      url: "https://github.com/pyjeebz/statewatch",
+    },
+    {
       title: "Breakwatch",
       description: "Breakwatch detects breaking changes in OpenAPI specifications to help maintain API compatibility.",
       url: "https://github.com/pyjeebz/breakwatch",
