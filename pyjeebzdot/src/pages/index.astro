@@ -1,111 +1,86 @@
 ---
 import Projects from "../components/react/projects";
 import Layout from "../layouts/Layout.astro";
-import Footer from "../components/react/footer";
+import Signature from "../components/react/Signature";
+import NowPlaying from "../components/react/NowPlaying";
 
 const links = [
-  { title: "GitHub", url: "https://github.com/pyjeebz" },
-  { title: "X", url: "https://x.com/pyjeebz" },
-  { title: "Email", url: "mailto:lawalsakamujeeb@gmail.com" },
-  { title: "LinkedIn", url: "https://www.linkedin.com/in/mujeeb-lawal-saka/" },
+  { title: "gh", url: "https://github.com/pyjeebz" },
+  { title: "x", url: "https://x.com/pyjeebz" },
+  { title: "email", url: "mailto:lawalsakamujeeb@gmail.com" },
+  { title: "linkedin", url: "https://www.linkedin.com/in/mujeeb-lawal-saka/" },
 ];
+
+const romanYear = (() => {
+  const vals: [number, string][] = [
+    [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"],
+    [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
+  ];
+  let r = "", y = new Date().getFullYear();
+  for (const [v, s] of vals) while (y >= v) { r += s; y -= v; }
+  return r;
+})();
 ---
 
-<Layout title="Mujeeb Lawal-Saka">
+<Layout title="Mujeeb">
   <header class="mb-16 sm:mb-20">
     <h1
-      class="font-serif text-[clamp(2.125rem,8vw,3.25rem)] font-normal leading-[1.08] tracking-[-0.02em] mb-5"
-      style="background: linear-gradient(135deg, #4A0E4E, #7C3AED, #FF8A65); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+      id="name-toggle"
+      role="button"
+      tabindex="0"
+      title="Click to change the accent"
+      aria-label="Mujeeb — click to change the accent color"
+      class="relative inline-block cursor-pointer select-none font-serif text-[clamp(2.125rem,8vw,3.25rem)] font-normal leading-[1.08] tracking-[-0.02em] mb-2 focus:outline-none focus-visible:opacity-80"
+      style="background: linear-gradient(135deg, var(--grad-1), var(--grad-2), var(--grad-3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
     >
-      Mujeeb Lawal-Saka
+      Mujeeb<span
+        class="absolute left-full top-0 ml-1.5 -translate-y-1/4"
+        style="-webkit-text-fill-color: initial;"
+      >
+        <Signature client:load />
+      </span>
     </h1>
-    <p
-      class="text-2xs uppercase tracking-[0.22em] text-muted mb-3 max-w-md leading-relaxed"
-    >
-      Software Engineer, Infrastructure · Canada
+    <p class="text-2xs tracking-[0.08em] text-muted">
+      build things
     </p>
-    <p class="text-sm text-muted mb-10 max-w-md leading-relaxed">
-      Currently building
-      <a
-        href="https://prescale.dev"
-        target="_blank"
-        rel="noreferrer"
-        id="prescale-trigger"
-        class="text-off-white hover:text-accent transition-colors underline underline-offset-[5px] decoration-white/20 hover:decoration-accent/60"
-      >PreScale</a> — predictive autoscaling for cloud infrastructure.
-    </p>
-    <!-- Hover preview positioned outside the paragraph flow -->
-    <div id="prescale-preview" class="prescale-preview">
-      <img src="/prescale-preview.png" alt="PreScale website preview" />
+    <div class="mt-12 min-h-[64px]">
+      <NowPlaying client:load />
     </div>
-    <p class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
+  </header>
+  <Projects />
+  <footer
+    class="mt-20 sm:mt-24 pt-8 border-t border-hairline flex flex-wrap items-center justify-between gap-x-6 gap-y-3"
+  >
+    <p class="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-sm text-muted-faint">
       {
-        links.map((link, i) => (
-          <>
-            {i > 0 ? (
-              <span class="text-muted-faint/35 select-none text-xs" aria-hidden>
-                ·
-              </span>
-            ) : null}
-            <a
-              href={link.url}
-              target="_blank"
-              rel="noreferrer"
-              class="text-muted hover:text-accent underline-offset-[5px] decoration-white/20 hover:decoration-accent/60 underline transition-colors"
-            >
-              {link.title}
-            </a>
-          </>
+        links.map((link) => (
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noreferrer"
+            class="hover:text-accent transition-colors"
+          >
+            {link.title}
+          </a>
         ))
       }
     </p>
-  </header>
-  <Projects />
-  <Footer client:visible />
+    <p class="font-serif text-sm text-muted-faint whitespace-nowrap">© {romanYear}</p>
+  </footer>
 </Layout>
 
-<style>
-  .prescale-preview {
-    position: fixed;
-    width: 340px;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(124, 58, 237, 0.2);
-    border: 1px solid rgba(245, 242, 235, 0.1);
-    z-index: 999;
-    pointer-events: none;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
-    transform: translateY(8px) scale(0.95);
-  }
-  .prescale-preview.visible {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  .prescale-preview img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-</style>
-
 <script is:inline>
-  document.addEventListener('DOMContentLoaded', function() {
-    var trigger = document.getElementById('prescale-trigger');
-    var preview = document.getElementById('prescale-preview');
-    if (trigger && preview) {
-      trigger.addEventListener('mouseenter', function() {
-        var rect = trigger.getBoundingClientRect();
-        var previewH = 200;
-        preview.style.left = rect.left + 'px';
-        preview.style.top = (rect.top - previewH - 12) + 'px';
-        preview.classList.add('visible');
-      });
-      trigger.addEventListener('mouseleave', function() {
-        preview.classList.remove('visible');
-      });
-    }
+  document.addEventListener("DOMContentLoaded", function () {
+    var name = document.getElementById("name-toggle");
+    if (!name || !window.__pjPalette) return;
+    name.addEventListener("click", function () {
+      window.__pjPalette.cycle();
+    });
+    name.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        window.__pjPalette.cycle();
+      }
+    });
   });
 </script>

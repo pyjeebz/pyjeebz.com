@@ -1,0 +1,49 @@
+---
+export const prerender = true;
+
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Signature from "../../components/react/Signature";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const dateStr = post.data.date.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<Layout title={`${post.data.title} - Mujeeb`}>
+  <article>
+    <a
+      href="/blog"
+      class="text-2xs uppercase tracking-[0.18em] text-muted-faint hover:text-accent transition-colors"
+    >
+      ← blog
+    </a>
+    <h1
+      class="font-serif text-[clamp(1.9rem,5vw,2.6rem)] font-medium text-off-white tracking-tight mt-6 mb-2"
+    >
+      {post.data.title}
+    </h1>
+    <p
+      class="font-mono text-2xs uppercase tracking-[0.14em] text-muted-faint mb-10 pb-6 border-b border-hairline"
+    >
+      {dateStr}
+    </p>
+    <div class="prose">
+      <Content />
+    </div>
+    <div class="mt-14 pt-8 border-t border-hairline flex items-center gap-3">
+      <span class="font-serif italic text-muted">signed,</span>
+      <Signature client:visible mode="once" width={120} height={46} />
+    </div>
+  </article>
+</Layout>

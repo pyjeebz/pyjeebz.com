@@ -9,37 +9,22 @@ function hostFromUrl(url: string): string {
 const Projects = () => {
   const projects = [
     {
-      title: "Statewatch",
-      description: "A dependency-aware drift detector for GCP.",
-      url: "https://github.com/pyjeebz/statewatch",
-    },
-    {
-      title: "Breakwatch",
-      description: "Breakwatch detects breaking changes in OpenAPI specifications to help maintain API compatibility.",
-      url: "https://github.com/pyjeebz/breakwatch",
-    },
-    {
       title: "PreScale",
       description:
-        "Predictive autoscaling for cloud infrastructure. Predict. Detect. Scale.",
+        "The open-source load tester that tells you why — point it at a URL and it finds what breaks first, at what traffic, and how to fix it.",
       url: "https://prescale.dev",
     },
     {
-      title: "predict",
-      description: "Predictive scaling engine and forecasting module.",
-      url: "https://github.com/pyjeebz/predict",
+      title: "why",
+      description:
+        "git blame tells you who; why tells you why — recovers the commits, PRs, and issues behind any line of code.",
+      url: "https://github.com/pyjeebz/why",
     },
     {
-      title: "AI Image Label Detector",
+      title: "ports",
       description:
-        "Computer vision tool for detecting and labeling objects in images using AWS Rekognition.",
-      url: "https://github.com/pyjeebz/ai-image-label-detector",
-    },
-    {
-      title: "AWS Resources Manager",
-      description:
-        "Automation tool to manage AWS services without manual console clicks.",
-      url: "https://github.com/pyjeebz/aws-resources-manager",
+        "See what's running on your machine, by project — and kill it by name.",
+      url: "https://ports.tools",
     },
     {
       title: "pyjeebz.com",
@@ -49,9 +34,9 @@ const Projects = () => {
   ];
 
   return (
-    <section>
+    <section id="workshop">
       <h2 className="font-serif text-[1.35rem] sm:text-2xl font-medium text-off-white tracking-tight mb-10 pb-4 border-b border-hairline">
-        Projects
+        the workshop
       </h2>
       <ul>
         {projects.map((project) => {
@@ -65,11 +50,11 @@ const Projects = () => {
                 href={project.url}
                 target="_blank"
                 rel="noreferrer"
-                className="group block py-6 sm:py-7 -mx-1 px-1 sm:px-2 -ml-2 sm:-ml-3 border-l-2 border-transparent hover:border-purple-500/55 pl-3 sm:pl-4 transition-colors"
+                className="group block py-6 sm:py-7 -mx-1 px-1 sm:px-2 -ml-2 sm:-ml-3 border-l-2 border-transparent hover:border-accent/55 pl-3 sm:pl-4 transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 sm:gap-6">
                   <div className="min-w-0">
-                    <span className="font-serif text-[1.05rem] sm:text-lg text-off-white group-hover:text-purple-400 transition-colors">
+                    <span className="font-serif text-[1.05rem] sm:text-lg text-off-white group-hover:text-accent transition-colors">
                       {project.title}
                     </span>
                     {host ? (

@@ -1,5 +1,6 @@
 ---
 import Navbar from "../components/Navbar.astro";
+import CommandPalette from "../components/react/CommandPalette";
 
 import "../styles/global.css";
 
@@ -14,7 +15,7 @@ const { title } = Astro.props;
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Mujeeb Lawal-Saka's portfolio. Engineer with an architect's flair. Building intelligent infrastructure at AssemblyHQ and PreScale." />
+    <meta name="description" content="Mujeeb's corner of the internet. Mostly held together with code and optimism." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -25,14 +26,51 @@ const { title } = Astro.props;
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pyjeebz.com" />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content="Mujeeb Lawal-Saka's portfolio. Engineer with an architect's flair. Building intelligent infrastructure at AssemblyHQ and PreScale." />
+    <meta property="og:description" content="Mujeeb's corner of the internet. Mostly held together with code and optimism." />
     <meta property="og:image" content="/card-preview.jpeg" />
 
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://pyjeebz.com" />
     <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content="Mujeeb Lawal-Saka's portfolio. Engineer with an architect's flair. Building intelligent infrastructure at AssemblyHQ and PreScale." />
+    <meta property="twitter:description" content="Mujeeb's corner of the internet. Mostly held together with code and optimism." />
     <meta property="twitter:image" content="/card-preview.jpeg" />
+
+    <script is:inline>
+      // Accent palette — applied before paint so the saved choice doesn't flash.
+      (function () {
+        var palettes = [
+          { rgb: "124 58 237", g: ["#4a0e4e", "#7c3aed", "#ff8a65"] }, // purple
+          { rgb: "20 184 166", g: ["#0e3a3e", "#14b8a6", "#5eead4"] }, // teal
+          { rgb: "245 158 11", g: ["#4a2e0e", "#f59e0b", "#fde68a"] }, // amber
+          { rgb: "225 29 72", g: ["#4a0e1e", "#e11d48", "#fb7185"] }, // crimson
+        ];
+        function apply(i) {
+          var p = palettes[((i % palettes.length) + palettes.length) % palettes.length];
+          var s = document.documentElement.style;
+          s.setProperty("--accent-rgb", p.rgb);
+          s.setProperty("--grad-1", p.g[0]);
+          s.setProperty("--grad-2", p.g[1]);
+          s.setProperty("--grad-3", p.g[2]);
+        }
+        var saved = 0;
+        try {
+          saved = parseInt(localStorage.getItem("pj-palette") || "0", 10) || 0;
+        } catch (e) {}
+        apply(saved);
+        window.__pjPalette = {
+          i: saved,
+          count: palettes.length,
+          apply: apply,
+          cycle: function () {
+            this.i = (this.i + 1) % palettes.length;
+            apply(this.i);
+            try {
+              localStorage.setItem("pj-palette", String(this.i));
+            } catch (e) {}
+          },
+        };
+      })();
+    </script>
   </head>
   <body class="bg-black-001 text-off-white min-h-screen font-sans antialiased">
     <div
@@ -41,5 +79,44 @@ const { title } = Astro.props;
       <Navbar />
       <slot />
     </div>
+    <CommandPalette client:load />
+
+    <script is:inline>
+      // Soft glow that lags behind the cursor. Skipped for touch + reduced motion.
+      (function () {
+        var fine = window.matchMedia("(pointer: fine)").matches;
+        var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!fine || calm) return;
+        var dot = document.createElement("div");
+        dot.className = "cursor-glow";
+        document.body.appendChild(dot);
+        var tx = window.innerWidth / 2,
+          ty = window.innerHeight / 2,
+          x = tx,
+          y = ty,
+          seen = false;
+        window.addEventListener("mousemove", function (e) {
+          tx = e.clientX;
+          ty = e.clientY;
+          if (!seen) {
+            seen = true;
+            dot.style.opacity = "1";
+          }
+        });
+        document.addEventListener("mouseleave", function () {
+          dot.style.opacity = "0";
+        });
+        document.addEventListener("mouseenter", function () {
+          if (seen) dot.style.opacity = "1";
+        });
+        (function loop() {
+          x += (tx - x) * 0.15;
+          y += (ty - y) * 0.15;
+          dot.style.transform =
+            "translate(" + x + "px," + y + "px) translate(-50%, -50%)";
+          requestAnimationFrame(loop);
+        })();
+      })();
+    </script>
   </body>
 </html>

@@ -1,21 +1,179 @@
 @import url(https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap);
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+  /* Accent palette — cycled by clicking the name. Defaults: purple. */
+  --accent-rgb: 124 58 237;
+  --grad-1: #4a0e4e;
+  --grad-2: #7c3aed;
+  --grad-3: #ff8a65;
 }
 
 body {
   font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   font-optical-sizing: auto;
-  background-color: #0c0b09;
-  color: #f5f2eb;
+  background-color: #f4f1e8;
+  color: #22201b;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background-color: rgba(124, 58, 237, 0.35);
-  color: #f5f2eb;
+  background-color: rgb(var(--accent-rgb) / 0.28);
+  color: #22201b;
+}
+
+/* Soft glow that trails the cursor (desktop + motion-safe only). */
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0;
+  will-change: transform;
+  transition: opacity 0.35s ease;
+  mix-blend-mode: multiply;
+  background: radial-gradient(
+    circle,
+    rgb(var(--accent-rgb) / 0.4) 0%,
+    rgb(var(--accent-rgb) / 0) 70%
+  );
+  filter: blur(8px);
+}
+
+/* Long-form blog content (rendered markdown). */
+.prose {
+  color: #2e2b25;
+  line-height: 1.78;
+  font-size: 1.02rem;
+}
+.prose > :first-child {
+  margin-top: 0;
+}
+.prose p {
+  margin: 0 0 1.2rem;
+}
+.prose h2 {
+  font-family: "Newsreader", Georgia, ui-serif, serif;
+  font-weight: 500;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  color: #22201b;
+  margin: 2.4rem 0 0.8rem;
+}
+.prose h3 {
+  font-family: "Newsreader", Georgia, ui-serif, serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: #22201b;
+  margin: 1.8rem 0 0.6rem;
+}
+.prose a {
+  color: rgb(var(--accent-rgb));
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--accent-rgb) / 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+.prose a:hover {
+  text-decoration-color: rgb(var(--accent-rgb));
+}
+.prose strong {
+  font-weight: 600;
+  color: #22201b;
+}
+.prose em {
+  font-style: italic;
+}
+.prose ul,
+.prose ol {
+  margin: 0 0 1.2rem;
+  padding-left: 1.3rem;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li {
+  margin: 0.35rem 0;
+}
+.prose blockquote {
+  border-left: 2px solid rgb(var(--accent-rgb) / 0.5);
+  padding-left: 1rem;
+  margin: 1.6rem 0;
+  font-family: "Newsreader", Georgia, ui-serif, serif;
+  font-style: italic;
+  color: #6b645a;
+}
+.prose code {
+  font-family: var(--mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.88em;
+  background: rgba(34, 32, 27, 0.06);
+  padding: 0.12em 0.36em;
+  border-radius: 4px;
+}
+.prose pre {
+  background: rgba(34, 32, 27, 0.05);
+  border: 1px solid var(--hairline, rgba(34, 32, 27, 0.12));
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  margin: 0 0 1.4rem;
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.85rem;
+}
+.prose hr {
+  border: 0;
+  border-top: 1px solid rgba(34, 32, 27, 0.12);
+  margin: 2.2rem 0;
+}
+
+/* Now-playing equalizer bars. */
+.np-bar {
+  width: 3px;
+  height: 12px;
+  transform-origin: bottom;
+  border-radius: 1px;
+  background: rgb(var(--accent-rgb));
+  animation: npBar 0.9s ease-in-out infinite;
+}
+@keyframes npBar {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-bar { animation: none; transform: scaleY(0.6); }
+}
+
+/* Signature (MLS) — draw + fill. fill-opacity keeps it gradient-id agnostic. */
+@keyframes sigCycle {
+  0% { stroke-dashoffset: 1; fill-opacity: 0; stroke-width: 1.5; opacity: 1; }
+  46% { stroke-dashoffset: 0; fill-opacity: 0; stroke-width: 1.5; opacity: 1; }
+  60% { stroke-dashoffset: 0; fill-opacity: 1; stroke-width: 0; opacity: 1; }
+  86% { fill-opacity: 1; stroke-width: 0; opacity: 1; }
+  100% { fill-opacity: 1; stroke-width: 0; opacity: 0; }
+}
+@keyframes sigDrawOnce {
+  0% { stroke-dashoffset: 1; fill-opacity: 0; stroke-width: 1.5; }
+  70% { stroke-dashoffset: 0; fill-opacity: 0; stroke-width: 1.5; }
+  100% { stroke-dashoffset: 0; fill-opacity: 1; stroke-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sig-path {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+    fill-opacity: 1 !important;
+    stroke-width: 0 !important;
+  }
 }
 
 @keyframes footerDraw {
