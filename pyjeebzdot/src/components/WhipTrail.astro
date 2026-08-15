@@ -1,0 +1,114 @@
+---
+// Whip-like cursor trail. Desktop pointers only, skipped for reduced motion.
+---
+
+<canvas class="whip-trail" data-whip aria-hidden="true"></canvas>
+
+<script is:inline>
+  (function () {
+    var canvas = document.querySelector("[data-whip]");
+    if (!canvas || !canvas.getContext) return;
+
+    var fine = window.matchMedia("(pointer: fine)").matches;
+    var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!fine || calm) {
+      canvas.remove();
+      return;
+    }
+
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    var N = 30;          // segments — longer tail = more whip
+    var LEAD = 0.34;     // how hard the head chases the cursor
+    var FOLLOW = 0.30;   // how each link chases the one ahead of it
+    var MAXW = 3.4;      // head thickness
+
+    // Stroke colour comes from the theme token so the lash stays visible on
+    // both the dark and the paper background.
+    var trail = "255 255 255";
+    function readTrail() {
+      var v = getComputedStyle(document.documentElement).getPropertyValue("--trail");
+      if (v) trail = v.trim();
+    }
+    readTrail();
+    window.addEventListener("pj:theme", readTrail);
+
+    var pts = [];
+    var mx = window.innerWidth / 2;
+    var my = window.innerHeight / 2;
+    var seen = false;
+    var dpr = 1;
+
+    for (var i = 0; i < N; i++) pts.push({ x: mx, y: my });
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(window.innerWidth * dpr);
+      canvas.height = Math.round(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    window.addEventListener(
+      "mousemove",
+      function (e) {
+        mx = e.clientX;
+        my = e.clientY;
+        if (!seen) {
+          seen = true;
+          // Snap the whole chain to the cursor so it doesn't fly in from 0,0.
+          for (var i = 0; i < N; i++) {
+            pts[i].x = mx;
+            pts[i].y = my;
+          }
+          canvas.classList.add("is-awake");
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener("mouseleave", function () {
+      canvas.classList.remove("is-awake");
+    });
+    document.addEventListener("mouseenter", function () {
+      if (seen) canvas.classList.add("is-awake");
+    });
+
+    function frame() {
+      // Head eases toward the cursor; every link eases toward its predecessor.
+      // The compounding lag is what gives the tail its whip-crack.
+      pts[0].x += (mx - pts[0].x) * LEAD;
+      pts[0].y += (my - pts[0].y) * LEAD;
+      for (var i = 1; i < N; i++) {
+        pts[i].x += (pts[i - 1].x - pts[i].x) * FOLLOW;
+        pts[i].y += (pts[i - 1].y - pts[i].y) * FOLLOW;
+      }
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      // Draw as midpoint quadratics so the lash stays a smooth curve, and taper
+      // width + alpha along its length so it reads as a whip, not a ribbon.
+      for (var j = 1; j < N - 1; j++) {
+        var p0 = pts[j - 1], p1 = pts[j], p2 = pts[j + 1];
+        var mid1x = (p0.x + p1.x) / 2, mid1y = (p0.y + p1.y) / 2;
+        var mid2x = (p1.x + p2.x) / 2, mid2y = (p1.y + p2.y) / 2;
+        var k = 1 - j / (N - 1);
+        ctx.beginPath();
+        ctx.moveTo(mid1x, mid1y);
+        ctx.quadraticCurveTo(p1.x, p1.y, mid2x, mid2y);
+        ctx.lineWidth = Math.max(0.15, MAXW * k * k);
+        ctx.strokeStyle = "rgb(" + trail + " / " + (0.85 * k * k).toFixed(3) + ")";
+        ctx.stroke();
+      }
+
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+</script>

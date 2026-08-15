@@ -1,20 +1,39 @@
 ---
-import Navbar from "../components/Navbar.astro";
-import CommandPalette from "../components/react/CommandPalette";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import WhipTrail from "../components/WhipTrail.astro";
 
 import "../styles/global.css";
 
 interface Props {
   title: string;
+  /** Set false to drop the name + "build things" masthead on a page. */
+  showHeader?: boolean;
+  /** Widen the column — the guestbook wall needs more room than the index. */
+  wide?: boolean;
+  /** Drop the column entirely so a page can run full-bleed. */
+  bleed?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, showHeader = true, wide = false, bleed = false } = Astro.props;
+
+const romanYear = (() => {
+  const vals: [number, string][] = [
+    [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"],
+    [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
+  ];
+  let r = "", y = new Date().getFullYear();
+  for (const [v, s] of vals) while (y >= v) { r += s; y -= v; }
+  return r;
+})();
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="theme-color" content="#0b0b0c" />
     <meta name="description" content="Mujeeb's corner of the internet. Mostly held together with code and optimism." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -36,87 +55,64 @@ const { title } = Astro.props;
     <meta property="twitter:image" content="/card-preview.jpeg" />
 
     <script is:inline>
-      // Accent palette — applied before paint so the saved choice doesn't flash.
+      // Applied before paint so the chosen theme never flashes.
       (function () {
-        var palettes = [
-          { rgb: "124 58 237", g: ["#4a0e4e", "#7c3aed", "#ff8a65"] }, // purple
-          { rgb: "20 184 166", g: ["#0e3a3e", "#14b8a6", "#5eead4"] }, // teal
-          { rgb: "245 158 11", g: ["#4a2e0e", "#f59e0b", "#fde68a"] }, // amber
-          { rgb: "225 29 72", g: ["#4a0e1e", "#e11d48", "#fb7185"] }, // crimson
-        ];
-        function apply(i) {
-          var p = palettes[((i % palettes.length) + palettes.length) % palettes.length];
-          var s = document.documentElement.style;
-          s.setProperty("--accent-rgb", p.rgb);
-          s.setProperty("--grad-1", p.g[0]);
-          s.setProperty("--grad-2", p.g[1]);
-          s.setProperty("--grad-3", p.g[2]);
+        var root = document.documentElement;
+        var saved = null;
+        try { saved = localStorage.getItem("pj-theme"); } catch (e) {}
+        var light =
+          saved === "light" ||
+          (!saved && window.matchMedia("(prefers-color-scheme: light)").matches);
+        if (light) root.classList.add("light");
+
+        function paintMeta() {
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (!m) return;
+          var bg = getComputedStyle(root).getPropertyValue("--bg").trim();
+          if (bg) m.setAttribute("content", bg);
         }
-        var saved = 0;
-        try {
-          saved = parseInt(localStorage.getItem("pj-palette") || "0", 10) || 0;
-        } catch (e) {}
-        apply(saved);
-        window.__pjPalette = {
-          i: saved,
-          count: palettes.length,
-          apply: apply,
-          cycle: function () {
-            this.i = (this.i + 1) % palettes.length;
-            apply(this.i);
-            try {
-              localStorage.setItem("pj-palette", String(this.i));
-            } catch (e) {}
+
+        window.__pjTheme = {
+          isLight: function () { return root.classList.contains("light"); },
+          toggle: function () {
+            var isLight = root.classList.toggle("light");
+            try { localStorage.setItem("pj-theme", isLight ? "light" : "dark"); } catch (e) {}
+            paintMeta();
+            try { window.dispatchEvent(new CustomEvent("pj:theme")); } catch (e) {}
+            return isLight;
           },
         };
+        document.addEventListener("DOMContentLoaded", paintMeta);
       })();
     </script>
-  </head>
-  <body class="bg-black-001 text-off-white min-h-screen font-sans antialiased">
-    <div
-      class="max-w-2xl mx-auto min-h-screen px-6 sm:px-8 py-12 sm:py-16 md:py-20"
-    >
-      <Navbar />
-      <slot />
-    </div>
-    <CommandPalette client:load />
 
-    <script is:inline>
-      // Soft glow that lags behind the cursor. Skipped for touch + reduced motion.
-      (function () {
-        var fine = window.matchMedia("(pointer: fine)").matches;
-        var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (!fine || calm) return;
-        var dot = document.createElement("div");
-        dot.className = "cursor-glow";
-        document.body.appendChild(dot);
-        var tx = window.innerWidth / 2,
-          ty = window.innerHeight / 2,
-          x = tx,
-          y = ty,
-          seen = false;
-        window.addEventListener("mousemove", function (e) {
-          tx = e.clientX;
-          ty = e.clientY;
-          if (!seen) {
-            seen = true;
-            dot.style.opacity = "1";
-          }
-        });
-        document.addEventListener("mouseleave", function () {
-          dot.style.opacity = "0";
-        });
-        document.addEventListener("mouseenter", function () {
-          if (seen) dot.style.opacity = "1";
-        });
-        (function loop() {
-          x += (tx - x) * 0.15;
-          y += (ty - y) * 0.15;
-          dot.style.transform =
-            "translate(" + x + "px," + y + "px) translate(-50%, -50%)";
-          requestAnimationFrame(loop);
-        })();
-      })();
-    </script>
+  </head>
+  <body class="bg-black-001 text-off-white min-h-screen antialiased">
+    <div
+      class:list={[
+        "mx-auto flex min-h-screen w-full flex-col",
+        bleed
+          ? "max-w-none px-4 py-8 sm:px-6"
+          : ["px-6 py-16 sm:py-20", wide ? "max-w-3xl" : "max-w-[26rem]"],
+      ]}
+    >
+      <main class="min-w-0 flex-1">
+        {showHeader && <SiteHeader home={Astro.url.pathname === "/"} />}
+        <slot />
+      </main>
+      <footer
+        class="mt-16 pt-6 border-t border-hairline flex flex-wrap items-center justify-between gap-x-6 gap-y-3"
+      >
+        <SocialLinks />
+        <div class="flex items-center gap-4">
+          <p class="font-mono text-2xs uppercase tracking-[0.14em] text-muted-faint">
+            © {romanYear}
+          </p>
+          <ThemeToggle />
+        </div>
+      </footer>
+    </div>
+
+    <WhipTrail />
   </body>
 </html>

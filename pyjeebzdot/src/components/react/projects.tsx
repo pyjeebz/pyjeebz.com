@@ -1,84 +1,62 @@
-function hostFromUrl(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return "";
-  }
-}
+type Item = {
+  title: string;
+  url: string;
+  /** Internal routes stay in the same tab and get no external-link arrow. */
+  internal?: boolean;
+};
 
 const Projects = () => {
-  const projects = [
-    {
-      title: "PreScale",
-      description:
-        "The open-source load tester that tells you why — point it at a URL and it finds what breaks first, at what traffic, and how to fix it.",
-      url: "https://prescale.dev",
-    },
-    {
-      title: "why",
-      description:
-        "git blame tells you who; why tells you why — recovers the commits, PRs, and issues behind any line of code.",
-      url: "https://github.com/pyjeebz/why",
-    },
-    {
-      title: "ports",
-      description:
-        "See what's running on your machine, by project — and kill it by name.",
-      url: "https://ports.tools",
-    },
-    {
-      title: "pyjeebz.com",
-      description: "My personal portfolio website. You're looking at it.",
-      url: "https://pyjeebz.com",
-    },
+  const items: Item[] = [
+    { title: "prescale", url: "https://prescale.dev" },
+    { title: "why", url: "https://github.com/pyjeebz/why" },
+    { title: "ports", url: "https://ports.tools" },
+    { title: "toss", url: "https://toss.pyjeebz.com" },
+    { title: "guestbook", url: "/guestbook", internal: true },
   ];
 
   return (
-    <section id="workshop">
-      <h2 className="font-serif text-[1.35rem] sm:text-2xl font-medium text-off-white tracking-tight mb-10 pb-4 border-b border-hairline">
-        the workshop
-      </h2>
-      <ul>
-        {projects.map((project) => {
-          const host = hostFromUrl(project.url);
-          return (
-            <li
-              key={project.title}
-              className="border-b border-hairline last:border-b-0"
+    <nav aria-label="Projects and pages">
+      <ul className="flex flex-col">
+        {items.map((item) => (
+          <li key={item.title}>
+            <a
+              href={item.url}
+              {...(item.internal
+                ? {}
+                : { target: "_blank", rel: "noopener noreferrer" })}
+              className="group relative flex items-center justify-between py-3 font-mono text-[15px]"
             >
-              <a
-                href={project.url}
-                target="_blank"
-                rel="noreferrer"
-                className="group block py-6 sm:py-7 -mx-1 px-1 sm:px-2 -ml-2 sm:-ml-3 border-l-2 border-transparent hover:border-accent/55 pl-3 sm:pl-4 transition-colors"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 sm:gap-6">
-                  <div className="min-w-0">
-                    <span className="font-serif text-[1.05rem] sm:text-lg text-off-white group-hover:text-accent transition-colors">
-                      {project.title}
-                    </span>
-                    {host ? (
-                      <span className="mt-1.5 block font-sans text-2xs uppercase tracking-[0.14em] text-muted-faint group-hover:text-muted transition-colors">
-                        {host}
-                      </span>
-                    ) : null}
-                  </div>
-                  <span
-                    className="shrink-0 font-sans text-muted-faint opacity-0 group-hover:opacity-100 transition-opacity text-sm hidden sm:block"
-                    aria-hidden
+              <span className="text-muted transition-colors duration-200 group-hover:text-off-white">
+                {item.title}
+              </span>
+
+              {!item.internal && (
+                <span
+                  className="text-muted-faint opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
+                  aria-hidden="true"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-3.5 w-3.5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
                   >
-                    ↗
-                  </span>
-                </div>
-                <p className="mt-3 text-[15px] leading-relaxed text-muted max-w-xl">
-                  {project.description}
-                </p>
-              </a>
-            </li>
-          );
-        })}
+                    <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                    <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                  </svg>
+                </span>
+              )}
+
+              {/* Underline wipes in from the left on hover. */}
+              <span
+                className="absolute bottom-2 left-0 h-px w-0 bg-accent/40 transition-all duration-300 ease-out group-hover:w-full"
+                aria-hidden="true"
+              />
+            </a>
+          </li>
+        ))}
       </ul>
-    </section>
+    </nav>
   );
 };
 

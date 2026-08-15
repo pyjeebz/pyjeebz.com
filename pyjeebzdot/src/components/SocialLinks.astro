@@ -1,0 +1,23 @@
+---
+const links = [
+  { label: "gh", href: "https://github.com/pyjeebz" },
+  { label: "x", href: "https://x.com/pyjeebz" },
+  { label: "in", href: "https://www.linkedin.com/in/mujeeb-lawal-saka/" },
+  { label: "email", href: "mailto:lawalsakamujeeb@gmail.com" },
+];
+---
+
+<p class="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-sm text-muted-faint">
+  {
+    links.map((link) => (
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noreferrer"
+        class="hover:text-accent transition-colors"
+      >
+        {link.label}
+      </a>
+    ))
+  }
+</p>
