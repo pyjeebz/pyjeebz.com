@@ -1,8 +1,10 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import GuestbookWrapper from '../components/react/GuestbookWrapper';
+import Layout from "../layouts/Layout.astro";
+import GuestbookWrapper from "../components/react/GuestbookWrapper";
 ---
 
-<Layout title='Guestbook - Mujeeb Lawal-Saka'>
-	<GuestbookWrapper client:load />
+<Layout title="guestbook - Mujeeb" showHeader={false} wide>
+  {/* Kept for screen readers and document outline; not shown. */}
+  <h1 class="sr-only">guestbook</h1>
+  <GuestbookWrapper client:load />
 </Layout>

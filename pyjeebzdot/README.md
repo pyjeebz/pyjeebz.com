@@ -1,6 +1,6 @@
 # pyjeebz.com
 
-Personal site for Mujeeb Lawal-Saka. Built with Astro, React, TailwindCSS, and Convex.
+Personal site for Mujeeb. Built with Astro, React, TailwindCSS, and Convex.
 
 ## Commands
 

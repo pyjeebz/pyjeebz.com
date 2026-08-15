@@ -8,7 +8,6 @@
  * @module
  */
 
-import type * as backfillUsernames from "../backfillUsernames.js";
 import type * as guestbook from "../guestbook.js";
 import type * as reactions from "../reactions.js";
 
@@ -19,7 +18,6 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  backfillUsernames: typeof backfillUsernames;
   guestbook: typeof guestbook;
   reactions: typeof reactions;
 }>;

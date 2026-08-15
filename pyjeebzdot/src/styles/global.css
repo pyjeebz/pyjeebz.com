@@ -1,21 +1,229 @@
 @import url(https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap);
 
-:root {
-  color-scheme: dark;
+/* Redaction — SIL OFL 1.1, (c) 2019 MCKL Inc. https://redaction.us
+   Grades run clean (Redaction) to heavily degraded (100). The name uses 100. */
+@font-face {
+  font-family: "Redaction 35";
+  src: url("/fonts/Redaction35-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Redaction 70";
+  src: url("/fonts/Redaction70-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Redaction 100";
+  src: url("/fonts/Redaction100-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
+
+:root {
+  color-scheme: dark;
+  /* Signature gradient. */
+  --grad-1: #ff0000;
+  --grad-2: #ff4500;
+  --grad-3: #ffd700;
+
+  /* Theme tokens — dark is the default; :root.light overrides all of them. */
+  --accent-rgb: 255 90 31;
+  --bg: #0b0b0c;
+  --ink: #e6e4e1;
+  --muted: #8f8a84;
+  --muted-faint: #5f5b56;
+  --hairline: rgba(255, 255, 255, 0.1);
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --panel: rgba(20, 20, 22, 0.92);
+  --prose: #cbc7c2;
+  --trail: 255 255 255;
+  --shadow: rgba(0, 0, 0, 0.8);
+  /* Swap to "Redaction 70" / "Redaction 35" for a less degraded name. */
+  --font-display: "Redaction 100", "Newsreader", Georgia, ui-serif, serif;
+}
+
+:root.light {
+  color-scheme: light;
+  /* Darker orange so links keep >=4.5:1 on paper. */
+  --accent-rgb: 194 65 12;
+  --bg: #f4f1e8;
+  --ink: #22201b;
+  --muted: #6b645a;
+  --muted-faint: #9c958b;
+  --hairline: rgba(34, 32, 27, 0.14);
+  --surface: rgba(34, 32, 27, 0.05);
+  --surface-2: rgba(34, 32, 27, 0.09);
+  --panel: rgba(252, 251, 247, 0.94);
+  --prose: #3a3630;
+  --trail: 34 32 27;
+  --shadow: rgba(34, 32, 27, 0.18);
+}
+
+
 body {
-  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas,
+    monospace;
   font-optical-sizing: auto;
-  background-color: #0c0b09;
-  color: #f5f2eb;
+  background-color: var(--bg);
+  color: var(--ink);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background-color: rgba(124, 58, 237, 0.35);
-  color: #f5f2eb;
+  background-color: rgb(var(--accent-rgb) / 0.3);
+  color: var(--ink);
+}
+
+/* Whip-like cursor trail (desktop + motion-safe only). */
+.whip-trail {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.whip-trail.is-awake {
+  opacity: 1;
+}
+
+/* Long-form blog content (rendered markdown). */
+.prose {
+  color: var(--prose);
+  line-height: 1.78;
+  font-size: 1.02rem;
+}
+.prose > :first-child {
+  margin-top: 0;
+}
+.prose p {
+  margin: 0 0 1.2rem;
+}
+.prose h2 {
+  font-family: "Newsreader", Georgia, ui-serif, serif;
+  font-weight: 500;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 2.4rem 0 0.8rem;
+}
+.prose h3 {
+  font-family: "Newsreader", Georgia, ui-serif, serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: var(--ink);
+  margin: 1.8rem 0 0.6rem;
+}
+.prose a {
+  color: rgb(var(--accent-rgb));
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--accent-rgb) / 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+.prose a:hover {
+  text-decoration-color: rgb(var(--accent-rgb));
+}
+.prose strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.prose em {
+  font-style: italic;
+}
+.prose ul,
+.prose ol {
+  margin: 0 0 1.2rem;
+  padding-left: 1.3rem;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li {
+  margin: 0.35rem 0;
+}
+.prose blockquote {
+  border-left: 2px solid rgb(var(--accent-rgb) / 0.5);
+  padding-left: 1rem;
+  margin: 1.6rem 0;
+  font-family: "Newsreader", Georgia, ui-serif, serif;
+  font-style: italic;
+  color: var(--muted);
+}
+.prose code {
+  font-family: var(--mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.88em;
+  background: var(--surface-2);
+  padding: 0.12em 0.36em;
+  border-radius: 4px;
+}
+.prose pre {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  margin: 0 0 1.4rem;
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.85rem;
+}
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  margin: 2.2rem 0;
+}
+
+/* Now-playing equalizer bars. */
+.np-bar {
+  width: 3px;
+  height: 12px;
+  transform-origin: bottom;
+  border-radius: 1px;
+  background: rgb(var(--accent-rgb));
+  animation: npBar 0.9s ease-in-out infinite;
+}
+@keyframes npBar {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-bar { animation: none; transform: scaleY(0.6); }
+}
+
+/* Signature (MLS) — draw + fill. fill-opacity keeps it gradient-id agnostic. */
+@keyframes sigCycle {
+  0% { stroke-dashoffset: 1; fill-opacity: 0; stroke-width: 1.5; opacity: 1; }
+  46% { stroke-dashoffset: 0; fill-opacity: 0; stroke-width: 1.5; opacity: 1; }
+  60% { stroke-dashoffset: 0; fill-opacity: 1; stroke-width: 0; opacity: 1; }
+  86% { fill-opacity: 1; stroke-width: 0; opacity: 1; }
+  100% { fill-opacity: 1; stroke-width: 0; opacity: 0; }
+}
+@keyframes sigDrawOnce {
+  0% { stroke-dashoffset: 1; fill-opacity: 0; stroke-width: 1.5; }
+  70% { stroke-dashoffset: 0; fill-opacity: 0; stroke-width: 1.5; }
+  100% { stroke-dashoffset: 0; fill-opacity: 1; stroke-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sig-path {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+    fill-opacity: 1 !important;
+    stroke-width: 0 !important;
+  }
 }
 
 @keyframes footerDraw {
@@ -36,4 +244,35 @@ body {
     fill: url(#footerGlow);
     stroke-width: 0;
   }
+}
+
+/* Theme toggle. */
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  border: 1px solid var(--hairline);
+  border-radius: 9999px;
+  background: var(--surface);
+  color: var(--muted);
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.theme-toggle:hover {
+  color: rgb(var(--accent-rgb));
+  border-color: rgb(var(--accent-rgb) / 0.4);
+  background: var(--surface-2);
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid rgb(var(--accent-rgb) / 0.7);
+  outline-offset: 3px;
+}
+.theme-toggle svg {
+  width: 14px;
+  height: 14px;
+}
+:root:not(.light) .theme-toggle .icon-sun,
+:root.light .theme-toggle .icon-moon {
+  display: none;
 }

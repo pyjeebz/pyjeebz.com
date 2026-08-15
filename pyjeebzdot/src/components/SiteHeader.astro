@@ -1,0 +1,40 @@
+---
+import Signature from "./react/Signature";
+import NowPlaying from "./react/NowPlaying";
+
+interface Props {
+  /** Home owns the page <h1>; inner pages get a link back. */
+  home?: boolean;
+}
+const { home = false } = Astro.props;
+---
+
+<header class="mb-12">
+  {
+    home ? (
+      <h1 class="relative inline-block font-display text-[1.75rem] font-normal leading-tight tracking-[0.01em] text-off-white">
+        Mujeeb
+        <span class="absolute left-full top-0 ml-1.5 -translate-y-1/4">
+          <Signature client:load width={32} height={12} />
+        </span>
+      </h1>
+    ) : (
+      <div class="relative inline-block font-display text-[1.75rem] font-normal leading-tight tracking-[0.01em] text-off-white">
+        <a href="/" aria-label="Mujeeb — home">Mujeeb</a>
+        <span class="absolute left-full top-0 ml-1.5 -translate-y-1/4">
+          <Signature client:load width={32} height={12} />
+        </span>
+      </div>
+    )
+  }
+
+  <p class="mt-1 font-mono text-[15px] text-muted-faint">makes things</p>
+
+  {
+    home && (
+      <div class="mt-8 min-h-[64px]">
+        <NowPlaying client:load />
+      </div>
+    )
+  }
+</header>
