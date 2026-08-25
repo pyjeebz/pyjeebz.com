@@ -109,6 +109,19 @@ export async function getNowPlaying(): Promise<NowPlaying> {
         lastGood = normalize(data.item, Boolean(data.is_playing), data.progress_ms ?? null);
         return lastGood;
       }
+      // 200 but no item - treat as paused
+      if (lastGood?.title) {
+        return { ...lastGood, isPlaying: false };
+      }
+      return { configured: true, isPlaying: false };
+    }
+
+    if (now.status === 204) {
+      // Explicitly paused - return last known track with isPlaying: false
+      if (lastGood?.title) {
+        return { ...lastGood, isPlaying: false };
+      }
+      return { configured: true, isPlaying: false };
     }
 
     const recent = await fetch(RECENT_URL, { headers: auth, cache: "no-store" });

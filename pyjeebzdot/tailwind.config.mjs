@@ -6,6 +6,7 @@ export default {
       fontFamily: {
         sans: ["DM Sans", "ui-sans-serif", "system-ui", "sans-serif"],
         serif: ["Newsreader", "Georgia", "ui-serif", "serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "JetBrains Mono", "Menlo", "Consolas", "monospace"],
         display: ["var(--font-display)"],
       },
       colors: {

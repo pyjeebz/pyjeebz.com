@@ -1,40 +1,43 @@
 ---
 import Signature from "./react/Signature";
-import NowPlaying from "./react/NowPlaying";
+import NowPlaying from "./react/NowPlayingV2";
 
 interface Props {
   /** Home owns the page <h1>; inner pages get a link back. */
   home?: boolean;
 }
 const { home = false } = Astro.props;
+const isHome = home;
 ---
 
-<header class="mb-12">
-  {
-    home ? (
-      <h1 class="relative inline-block font-display text-[1.75rem] font-normal leading-tight tracking-[0.01em] text-off-white">
-        Mujeeb
-        <span class="absolute left-full top-0 ml-1.5 -translate-y-1/4">
-          <Signature client:load width={32} height={12} />
-        </span>
-      </h1>
-    ) : (
-      <div class="relative inline-block font-display text-[1.75rem] font-normal leading-tight tracking-[0.01em] text-off-white">
-        <a href="/" aria-label="Mujeeb — home">Mujeeb</a>
-        <span class="absolute left-full top-0 ml-1.5 -translate-y-1/4">
-          <Signature client:load width={32} height={12} />
-        </span>
-      </div>
-    )
-  }
+<header class="mb-16 sm:mb-20 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8">
+  <div class="flex-1 min-w-0">
+    {
+      isHome ? (
+        <h1 class="relative inline-block font-display text-[clamp(2.125rem,8vw,3.25rem)] font-normal text-off-white leading-[1.08] tracking-[-0.02em] mb-5">
+          Mujeeb
+          <span class="absolute left-full top-0 ml-2 -translate-y-1/4">
+            <Signature client:only="react" width={36} height={14} />
+          </span>
+        </h1>
+      ) : (
+        <div class="relative inline-block font-display text-[clamp(2.125rem,8vw,3.25rem)] font-normal text-off-white leading-[1.08] tracking-[-0.02em] mb-5">
+          <a href="/" aria-label="Mujeeb — home">Mujeeb</a>
+          <span class="absolute left-full top-0 ml-2 -translate-y-1/4">
+            <Signature client:only="react" width={36} height={14} />
+          </span>
+        </div>
+      )
+    }
 
-  <p class="mt-1 font-mono text-[15px] text-muted-faint">makes things</p>
+    <p class="text-2xs uppercase tracking-[0.22em] text-muted mb-3 max-w-md leading-relaxed">
+      Software Engineer
+    </p>
+  </div>
 
-  {
-    home && (
-      <div class="mt-8 min-h-[64px]">
-        <NowPlaying client:load />
-      </div>
-    )
-  }
+  <div class="shrink-0 sm:ml-8 mt-4 sm:mt-0">
+    {isHome && (
+      <NowPlaying client:only="react" />
+    )}
+  </div>
 </header>

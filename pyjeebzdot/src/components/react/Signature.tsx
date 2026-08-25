@@ -53,8 +53,10 @@ const Signature = ({
     <span
       className="inline-block align-top"
       style={{
+        // The gradient now carries its own depth — drop the brightness wash
+        // (which was desaturating the path) and keep just the saturate + glow.
         filter:
-          "saturate(1.5) brightness(0.85) drop-shadow(0 0 4px rgb(var(--accent-rgb) / 0.5))",
+          "saturate(1.6) drop-shadow(0 0 3px rgb(var(--accent-ember) / 0.45))",
       }}
     >
       <svg

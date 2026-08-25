@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { registerEventSourceCleanup } from "../../utils/eventSourceCleanup";
 
 type NowPlayingData = {
   configured?: boolean;
@@ -13,42 +14,74 @@ type NowPlayingData = {
   durationMs?: number | null;
 };
 
-// Each bar gets its own height, tempo and phase so they move independently —
-// reads as "reacting to the music" rather than marching in lockstep. (Not a
-// real beat-sync: Spotify's tempo/analysis endpoints are deprecated for the app
-// and the audio isn't in the browser.)
-const BARS = [
-  { h: 9, dur: 0.8, delay: 0 },
-  { h: 15, dur: 1.3, delay: 0.18 },
-  { h: 7, dur: 0.62, delay: 0.05 },
-  { h: 13, dur: 1.05, delay: 0.24 },
-  { h: 11, dur: 0.9, delay: 0.1 },
-];
-
-const Equalizer = () => (
-  <span className="flex items-end gap-[2px] h-4" aria-hidden>
-    {BARS.map((b, i) => (
-      <span
-        key={i}
-        className="np-bar"
-        style={{
-          height: b.h,
-          animationDuration: `${b.dur}s`,
-          animationDelay: `${b.delay}s`,
-        }}
-      />
+const CharWave = ({ text, color }: { text: string; color?: string }) => (
+  <span className="char-wave" aria-label={text} style={{ color: color ?? "inherit", filter: "saturate(1.8)" }}>
+    {text.split("").map((char, i) => (
+      <span key={i} style={{ animationDelay: `${i * 80}ms` }}>
+        {char === " " ? "\u00A0" : char}
+      </span>
     ))}
   </span>
 );
 
-// 2 = playing, 1 = paused/last-played, 0 = nothing to show (hidden).
+const Tooltip = ({ content }: { content: string | null | undefined }) => {
+  if (!content) return null;
+  return (
+    <span className="tooltip-wrapper" tabIndex={0}>
+      <span className="tooltip" role="tooltip">{content}</span>
+    </span>
+  );
+};
+
+const sameTrack = (a: NowPlayingData | null, b: NowPlayingData | null) =>
+  !!a && !!b && a.title === b.title && a.artist === b.artist;
+
 const rank = (d: NowPlayingData | null) =>
   !d || !d.title || d.configured === false || d.error ? 0 : d.isPlaying ? 2 : 1;
+
+function getDominantColor(imageUrl: string): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = imageUrl;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        resolve("rgb(var(--accent-rgb))");
+        return;
+      }
+      const size = 50;
+      canvas.width = size;
+      canvas.height = size;
+      ctx.drawImage(img, 0, 0, size, size);
+      const data = ctx.getImageData(0, 0, size, size).data;
+      let r = 0, g = 0, b = 0, count = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        if (brightness > 30 && brightness < 225) {
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          count++;
+        }
+      }
+      if (count > 0) {
+        resolve(`rgb(${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)})`);
+      } else {
+        resolve("rgb(var(--accent-rgb))");
+      }
+    };
+    img.onerror = () => resolve("rgb(var(--accent-rgb))");
+    setTimeout(() => resolve("rgb(var(--accent-rgb))"), 3000);
+  });
+}
 
 export default function NowPlaying() {
   const [data, setData] = useState<NowPlayingData | null>(null);
   const dataRef = useRef<NowPlayingData | null>(null);
   const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [titleColor, setTitleColor] = useState<string>("rgb(var(--accent-rgb))");
 
   useEffect(() => {
     let es: EventSource | null = null;
@@ -65,12 +98,10 @@ export default function NowPlaying() {
     };
 
     const onFrame = (d: NowPlayingData) => {
-      // Upgrades (a track starts / changes) apply instantly. Downgrades
-      // (pause / stop / hide) wait ~2.5s to confirm they aren't a transient
-      // blip at a track boundary — the server only re-pushes on real change,
-      // so a self-correcting blip cancels this before it fires.
       clearPending();
-      if (rank(d) >= rank(dataRef.current)) {
+      if (sameTrack(d, dataRef.current) && d.isPlaying !== dataRef.current?.isPlaying) {
+        apply(d);
+      } else if (rank(d) >= rank(dataRef.current)) {
         apply(d);
       } else {
         pending.current = setTimeout(() => {
@@ -80,11 +111,10 @@ export default function NowPlaying() {
       }
     };
 
-    // Open the SSE stream when the tab is visible; close it when hidden so we
-    // don't hold a serverless connection open in the background.
     const open = () => {
       if (es) return;
       es = new EventSource("/api/now-playing-stream");
+      registerEventSourceCleanup(es);
       es.onmessage = (e) => {
         try {
           onFrame(JSON.parse(e.data) as NowPlayingData);
@@ -92,7 +122,6 @@ export default function NowPlaying() {
           /* ignore malformed frame */
         }
       };
-      // On error EventSource retries automatically; nothing to do.
     };
     const close = () => {
       es?.close();
@@ -109,51 +138,54 @@ export default function NowPlaying() {
     };
   }, []);
 
-  // Hide entirely until there's a real track to show (or before setup).
+  useEffect(() => {
+    if (data?.albumImageUrl) {
+      getDominantColor(data.albumImageUrl).then(setTitleColor);
+    } else {
+      setTitleColor("rgb(var(--accent-rgb))");
+    }
+  }, [data?.albumImageUrl]);
+
   if (!data || data.configured === false || data.error || !data.title) return null;
 
-  const label = data.isPlaying ? "now playing" : "last played";
+  const label = data.isPlaying ? "listening to" : "last played";
+  const tooltipContent = data.artist && data.album
+    ? `${data.artist} · ${data.album}`
+    : data.artist;
 
-  const inner = (
-    <>
-      {data.albumImageUrl ? (
-        <img
-          src={data.albumImageUrl}
-          alt={data.album ?? ""}
-          width={64}
-          height={64}
-          loading="lazy"
-          className="h-16 w-16 shrink-0 rounded-md border border-hairline object-cover"
-        />
-      ) : null}
-      <span className="min-w-0">
-        <span className="flex items-center gap-2">
-          {data.isPlaying ? (
-            <Equalizer />
-          ) : (
-            <span className="text-accent" aria-hidden>
-              ♪
-            </span>
-          )}
-          <span className="font-mono text-2xs uppercase tracking-[0.16em] text-muted-faint">
-            {label}
+  return (
+    <div className="now-playing-wrapper">
+      {data.songUrl && data.isPlaying ? (
+        <a
+          href={data.songUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="now-playing-link"
+        >
+          <span className="label">{label}</span>
+          <span className="title-wrapper">
+            <CharWave text={data.title ?? ""} color={titleColor} />
+            <Tooltip content={tooltipContent} />
+          </span>
+        </a>
+      ) : data.isPlaying ? (
+        <span className="now-playing-link">
+          <span className="label">{label}</span>
+          <span className="title-wrapper">
+            <CharWave text={data.title ?? ""} color={titleColor} />
+            <Tooltip content={tooltipContent} />
           </span>
         </span>
-        <span className="mt-1 block truncate text-sm text-off-white transition-colors group-hover:text-accent">
-          {data.title}
+      ) : (
+        <span className="now-playing-link paused">
+          <span className="label">{label}</span>
+          <span className="title-wrapper paused">
+            <span className="text-muted">{data.title}</span>
+            <Tooltip content={tooltipContent} />
+          </span>
+          <span className="paused-icon" aria-hidden="true">♪</span>
         </span>
-        <span className="block truncate text-xs text-muted">{data.artist}</span>
-      </span>
-    </>
-  );
-
-  const className = "group inline-flex max-w-md items-center gap-4";
-
-  return data.songUrl ? (
-    <a href={data.songUrl} target="_blank" rel="noreferrer" className={className}>
-      {inner}
-    </a>
-  ) : (
-    <span className={className}>{inner}</span>
+      )}
+    </div>
   );
 }

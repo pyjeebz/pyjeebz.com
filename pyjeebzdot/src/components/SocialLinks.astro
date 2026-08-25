@@ -7,14 +7,14 @@ const links = [
 ];
 ---
 
-<p class="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-sm text-muted-faint">
+<p class="flex flex-wrap items-center gap-x-5 gap-y-2 font-sans text-[13px] text-muted">
   {
     links.map((link) => (
       <a
         href={link.href}
         target="_blank"
         rel="noreferrer"
-        class="hover:text-accent transition-colors"
+        class="hover:text-off-white transition-colors"
       >
         {link.label}
       </a>
