@@ -1,13 +1,22 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
-  reactions: defineTable({
-    slug: v.string(),
-    emoji: v.string(),
-  })
-    .index("by_slug", ["slug"])
-    .index("by_slug_emoji", ["slug", "emoji"]),
+  // All authSessions/authAccounts/etc. tables from @convex-dev/auth.
+  ...authTables,
+  // Inlined only to add githubId — every other field is the library default.
+  users: defineTable({
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    image: v.optional(v.string()),
+    isAnonymous: v.optional(v.boolean()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    // Explicit GitHub identity, mirrored from the auth profile.
+    githubId: v.optional(v.string()),
+  }).index("email", ["email"]),
 
   guestbook: defineTable({
     name: v.string(),
@@ -26,5 +35,10 @@ export default defineSchema({
     createdAt: v.number(),
     // Set true from the Convex dashboard to hide an entry without deleting it.
     hidden: v.optional(v.boolean()),
-  }).index("by_created", ["createdAt"]),
+    // Set once auth landed; absent = legacy anonymous entry (stays visible).
+    userId: v.optional(v.id("users")),
+    avatarUrl: v.optional(v.string()),
+  })
+    .index("by_created", ["createdAt"])
+    .index("by_user", ["userId"]),
 });

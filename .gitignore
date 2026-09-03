@@ -33,3 +33,6 @@ next-env.d.ts
 
 # lock files (keep package-lock, ignore bun)
 bun.lock
+
+# claude code session data
+.claude/

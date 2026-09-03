@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import WallWrapper from "../components/react/WallWrapper";
+
+export const prerender = true;
+---
+
+<Layout title="the wall - Mujeeb" bare>
+  <WallWrapper client:only="react" />
+</Layout>

@@ -14,15 +14,15 @@
     "@astrojs/react": "^4.3.0",
     "@astrojs/tailwind": "^6.0.2",
     "@astrojs/vercel": "^9.0.4",
+    "@auth/core": "^0.41.1",
+    "@convex-dev/auth": "^0.0.95",
     "astro": "^5.13.3",
     "convex": "^1.31.5",
     "dotenv": "^17.2.3",
-    "lucide-react": "^0.541.0",
+    "drawably": "^0.3.10",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.4"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.11",
-    "webp-converter": "^3.0.1"
   }
 }
