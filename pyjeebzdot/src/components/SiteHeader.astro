@@ -1,43 +1,82 @@
 ---
 import Signature from "./react/Signature";
-import NowPlaying from "./react/NowPlayingV2";
+import Highlighter from "./napkin/Highlighter.astro";
+import SocialIcons from "./SocialIcons.astro";
 
 interface Props {
   /** Home owns the page <h1>; inner pages get a link back. */
   home?: boolean;
 }
 const { home = false } = Astro.props;
-const isHome = home;
+
+const path = Astro.url.pathname;
+const navItems = [
+  { label: "home", href: "/" },
+  { label: "blog", href: "/blog" },
+  { label: "guestbook", href: "/guestbook" },
+];
+const isCurrent = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
 ---
 
-<header class="mb-16 sm:mb-20 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8">
-  <div class="flex-1 min-w-0">
+<header class="mb-16 sm:mb-20">
+  <nav
+    class="flex items-center gap-x-5 gap-y-2 flex-wrap font-mono text-sm text-muted mb-14"
+    aria-label="Main"
+  >
     {
-      isHome ? (
-        <h1 class="relative inline-block font-display text-[clamp(2.125rem,8vw,3.25rem)] font-normal text-off-white leading-[1.08] tracking-[-0.02em] mb-5">
+      navItems.map(({ label, href }) =>
+        isCurrent(href) ? (
+          <Highlighter color="yellow" class="font-mono">{label}</Highlighter>
+        ) : (
+          <a
+            href={href}
+            data-napkin="underline"
+            class="hover:text-charcoal transition-colors"
+          >
+            {label}
+          </a>
+        )
+      )
+    }
+  </nav>
+
+  {
+    home && (
+      <div>
+        <h1 class="relative inline-block font-display text-[clamp(2.375rem,8vw,3.5rem)] font-normal text-charcoal leading-[1.08] tracking-[-0.01em] mb-4">
           Mujeeb
           <span class="absolute left-full top-0 ml-2 -translate-y-1/4">
             <Signature client:only="react" width={36} height={14} />
           </span>
         </h1>
-      ) : (
-        <div class="relative inline-block font-display text-[clamp(2.125rem,8vw,3.25rem)] font-normal text-off-white leading-[1.08] tracking-[-0.02em] mb-5">
-          <a href="/" aria-label="Mujeeb — home">Mujeeb</a>
-          <span class="absolute left-full top-0 ml-2 -translate-y-1/4">
-            <Signature client:only="react" width={36} height={14} />
-          </span>
+        <div class="mb-6 flex items-center gap-5">
+          <p class="font-mono text-2xs uppercase tracking-[0.22em] text-muted">
+            Software Engineer
+          </p>
+          <SocialIcons size={16} />
         </div>
-      )
-    }
-
-    <p class="text-2xs uppercase tracking-[0.22em] text-muted mb-3 max-w-md leading-relaxed">
-      Software Engineer
-    </p>
-  </div>
-
-  <div class="shrink-0 sm:ml-8 mt-4 sm:mt-0">
-    {isHome && (
-      <NowPlaying client:only="react" />
-    )}
-  </div>
+        <div class="max-w-lg space-y-1 text-base leading-relaxed">
+          <p>
+            I'm a software engineer and open-source builder exploring the
+            intersection of <Highlighter color="yellow" class="font-bold">Systems, Search, AI, and Machine Learning</Highlighter>.
+          </p>
+          <p>
+            I build software to understand ideas that interest me, from
+            distributed systems and cloud infrastructure to search engines and
+            intelligent tools. I learn by building, experimenting, and shipping
+            things into the real world.
+          </p>
+        </div>
+        <div class="mt-6 max-w-lg">
+          <p class="text-muted">Most of my work starts with a question:</p>
+          <div class="mt-2 font-display text-[17px] text-charcoal/85">
+            <p>How does this work?</p>
+            <p>How could it work better?</p>
+            <p>What can I build from it?</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 </header>

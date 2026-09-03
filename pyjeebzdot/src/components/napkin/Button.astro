@@ -1,0 +1,28 @@
+---
+interface Props {
+  /** outline (default) | solid | scribble */
+  variant?: "outline" | "solid" | "scribble";
+  /** neutral (warm grey) | danger (red) */
+  tone?: "neutral" | "danger";
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { variant = "outline", tone, type = "button", disabled, class: className, ...rest } = Astro.props;
+
+const opts: Record<string, unknown> = { variant };
+if (tone) opts.tone = tone;
+---
+
+<button
+  data-napkin="button"
+  data-napkin-opts={JSON.stringify(opts)}
+  type={type}
+  disabled={disabled}
+  class:list={["font-body font-bold text-charcoal px-5 py-2 text-base cursor-pointer", className]}
+  {...rest}
+>
+  <slot />
+</button>

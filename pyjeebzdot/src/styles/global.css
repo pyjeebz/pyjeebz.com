@@ -1,712 +1,331 @@
-@import url(https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap);
-
-/* Redaction — SIL OFL 1.1, (c) 2019 MCKL Inc. https://redaction.us
-   Grades run clean (Redaction) to heavily degraded (100). The name uses 100. */
-@font-face {
-  font-family: "Redaction 35";
-  src: url("/fonts/Redaction35-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Redaction 70";
-  src: url("/fonts/Redaction70-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Redaction 100";
-  src: url("/fonts/Redaction100-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
+/* ------------------------------------------------------------------
+   Napkin — wabi-sabi, hand-drawn, lo-fi.
+   Architects Daughter = sharpie, Kalam = ballpoint, JetBrains Mono = ruler.
+   ------------------------------------------------------------------ */
 
 :root {
-  color-scheme: dark;
-  /* Single theme: warm cream + ink, tan accent. The dark/light split is a
-     value flip of the same family, never a hue swap. */
-  --accent-rgb: 196 181 157;          /* #c4b59d — warm tan */
-  --accent-ember: 196 138 70;         /* hover/active within the same family */
-  --bg: #0c0b09;
-  --ink: #f5f2eb;
-  --muted: #9a958c;
-  --muted-faint: #6b6560;
-  --hairline: rgba(245, 242, 235, 0.09);
-  --surface: rgba(255, 255, 255, 0.04);
-  --surface-2: rgba(255, 255, 255, 0.08);
-  --panel: rgba(20, 20, 22, 0.92);
-  --prose: #cbc7c2;
-  --trail: 255 255 255;
-  --shadow: rgba(0, 0, 0, 0.8);
-
-  /* Signature gradient — deeper ember ink, still in the warm tan family.
-     The previous pastel stops read as a beige blur; these read as ink. */
-  --grad-1: #7a5a32;  /* deep ember */
-  --grad-2: #b8763a;  /* warm bronze */
-  --grad-3: #d8a878;  /* ember */
-
-  /* "Mujeeb" stays in Redaction. Display falls back to Newsreader if woff2 is missing. */
-  --font-display: "Redaction 100", "Newsreader", Georgia, ui-serif, serif;
-}
-
-:root.light {
   color-scheme: light;
-  /* Darker accent so links keep >=4.5:1 on paper; same hue, lower lightness. */
-  --accent-rgb: 110 91 64;
-  --accent-ember: 154 96 38;
-  --bg: #f4f1e8;
-  --ink: #22201b;
-  --muted: #6b645a;
-  --muted-faint: #9c958b;
-  --hairline: rgba(34, 32, 27, 0.14);
-  --surface: rgba(34, 32, 27, 0.05);
-  --surface-2: rgba(34, 32, 27, 0.09);
-  --panel: rgba(252, 251, 247, 0.94);
-  --prose: #3a3630;
-  --trail: 34 32 27;
-  --shadow: rgba(34, 32, 27, 0.18);
-  /* Light mode: deeper bronze so the sig reads on cream paper. */
-  --grad-1: #4a3416;
-  --grad-2: #7a4a1c;
-  --grad-3: #9a6026;
+
+  --color-paper: #F4F1EA;
+  --color-charcoal: #2C2C2A;
+  --color-charcoal-light: #595955;
+  --color-surface: #FFFFFF;
+  --color-muted: rgba(44 44 42 / 0.62);
+  --color-muted-faint: rgba(44 44 42 / 0.38);
+
+  --highlighter-yellow: #F5DE6B;
+  --highlighter-pink: #F2A9BC;
+  --highlighter-blue: #A8C9EE;
+  --highlighter-green: #B3D6A4;
+
+  /* The one deliberate splash — deep wine, reserved for the signature. */
+  --accent-rust: #900C3F;
+
+  /* drawably theme — set once, used by every sketch on the site */
+  --drawably-stroke: #2C2C2A;
+  --drawably-fill: #2C2C2A;
+  --drawably-paper: #F4F1EA;
 }
 
+html {
+  scroll-behavior: smooth;
+}
 
 body {
-  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  font-optical-sizing: auto;
-  background-color: var(--bg);
-  color: var(--ink);
-  line-height: 1.65;
+  font-family: "Kalam", "Segoe Print", "Comic Sans MS", cursive;
+  color: var(--color-charcoal);
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
 
+/* Sketchbook paper: base tone + faint fractal-noise grain. */
+.paper-texture {
+  background-color: var(--color-paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* Dot-grid modifier — used only on the guestbook wall. */
+.napkin-grid {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+    radial-gradient(circle, rgb(44 44 42 / 0.07) 1px, transparent 1.5px);
+  background-size: 240px 240px, 26px 26px;
+}
+
+/* Hand-drawn border fallback (guestbook scraps — no drawably chrome there). */
+.napkin-scrap {
+  border: 2px solid var(--color-charcoal);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+}
+
 ::selection {
-  background-color: rgb(var(--accent-rgb) / 0.35);
-  color: var(--ink);
+  background: var(--highlighter-yellow);
+  color: var(--color-charcoal);
 }
 
-/* 4px spacing scale rhythm. Section padding 48–64px, body line-height 1.6. */
-
-/* Whip-like cursor trail (desktop + motion-safe only). */
-.whip-trail {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-.whip-trail.is-awake {
-  opacity: 1;
+:focus-visible {
+  outline: 2px dashed var(--color-charcoal);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
-/* Long-form blog content (rendered markdown). */
+/* ------------------------------------------------------------------
+   Prose (blog posts) — sharpie headings, ballpoint body, ruler code.
+   ------------------------------------------------------------------ */
+
 .prose {
-  color: var(--prose);
-  line-height: 1.78;
-  font-size: 1.02rem;
+  font-size: 1.0625rem;
+  line-height: 1.85;
 }
-.prose > :first-child {
-  margin-top: 0;
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: "Architects Daughter", "Comic Sans MS", "Segoe Print", cursive;
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 2.2em 0 0.7em;
+  letter-spacing: 0;
 }
-.prose p {
-  margin: 0 0 1.2rem;
-}
-.prose h2 {
-  font-family: "Newsreader", Georgia, ui-serif, serif;
-  font-weight: 500;
-  font-size: 1.5rem;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-  margin: 2.4rem 0 0.8rem;
-}
-.prose h3 {
-  font-family: "Newsreader", Georgia, ui-serif, serif;
-  font-weight: 500;
-  font-size: 1.2rem;
-  color: var(--ink);
-  margin: 1.8rem 0 0.6rem;
-}
-.prose a {
-  color: rgb(var(--accent-rgb));
-  text-decoration: underline;
-  text-decoration-color: rgb(var(--accent-rgb) / 0.4);
-  text-underline-offset: 3px;
-  transition: text-decoration-color 0.2s;
-}
-.prose a:hover {
-  text-decoration-color: rgb(var(--accent-rgb));
-}
-.prose strong {
-  font-weight: 600;
-  color: var(--ink);
-}
-.prose em {
-  font-style: italic;
-}
+
+.prose h2 { font-size: 1.65em; }
+.prose h3 { font-size: 1.3em; }
+
+.prose p,
 .prose ul,
 .prose ol {
-  margin: 0 0 1.2rem;
-  padding-left: 1.3rem;
+  margin: 1.15em 0;
 }
-.prose ul {
-  list-style: disc;
+
+.prose li { margin: 0.35em 0; }
+
+.prose a {
+  color: var(--color-charcoal);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-muted-faint);
+  transition: text-decoration-color 0.2s ease, background-size 0.2s ease;
+  background-image: linear-gradient(transparent 55%, var(--highlighter-yellow) 55%);
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
 }
-.prose ol {
-  list-style: decimal;
+
+.prose a:hover {
+  text-decoration-color: var(--color-charcoal);
+  background-size: 100% 100%;
 }
-.prose li {
-  margin: 0.35rem 0;
-}
+
+.prose strong { font-weight: 700; }
+
 .prose blockquote {
-  border-left: 2px solid rgb(var(--accent-rgb) / 0.5);
-  padding-left: 1rem;
-  margin: 1.6rem 0;
-  font-family: "Newsreader", Georgia, ui-serif, serif;
+  border-left: 2px solid var(--color-charcoal-light);
+  padding-left: 1.1em;
+  margin: 1.5em 0;
+  color: var(--color-muted);
   font-style: italic;
-  color: var(--muted);
 }
+
 .prose code {
-  font-family: var(--mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
-  font-size: 0.88em;
-  background: var(--surface-2);
-  padding: 0.12em 0.36em;
-  border-radius: 4px;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+  background: rgba(44 44 42 / 0.06);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
 }
+
 .prose pre {
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
-  padding: 1rem 1.1rem;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-charcoal);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 1em 1.25em;
   overflow-x: auto;
-  margin: 0 0 1.4rem;
+  margin: 1.5em 0;
 }
+
 .prose pre code {
   background: none;
   padding: 0;
-  font-size: 0.85rem;
+  border-radius: 0;
 }
+
+.prose img {
+  border-radius: 4px;
+  margin: 1.5em 0;
+}
+
 .prose hr {
-  border: 0;
-  border-top: 1px solid var(--hairline);
-  margin: 2.2rem 0;
+  border: none;
+  height: 2px;
+  background: var(--color-charcoal);
+  opacity: 0.7;
+  transform: rotate(-0.4deg);
+  margin: 2.5em 0;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
 
-/* Now-playing equalizer bars. */
-.np-bar {
-  width: 3px;
-  height: 12px;
-  transform-origin: bottom;
-  border-radius: 1px;
-  background: rgb(var(--accent-rgb));
-  animation: npBar 0.9s ease-in-out infinite;
-}
-@keyframes npBar {
-  0%, 100% { transform: scaleY(0.3); }
-  50% { transform: scaleY(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .np-bar { animation: none; transform: scaleY(0.6); }
-}
+/* ------------------------------------------------------------------
+   Signature (MLS) — draw + fill. Charcoal ink, no glow.
+   ------------------------------------------------------------------ */
 
-/* Signature (MLS) — draw + fill. fill-opacity keeps it gradient-id agnostic. */
+/* The signature draws in ink, then the kiln-rust fill bleeds in and the ink
+   line thins (but never disappears) — pen under a wash of warm glaze. */
 @keyframes sigCycle {
   0% { stroke-dashoffset: 1; fill-opacity: 0; stroke-width: 1.5; opacity: 1; }
   46% { stroke-dashoffset: 0; fill-opacity: 0; stroke-width: 1.5; opacity: 1; }
-  60% { stroke-dashoffset: 0; fill-opacity: 1; stroke-width: 0; opacity: 1; }
-  86% { fill-opacity: 1; stroke-width: 0; opacity: 1; }
-  100% { fill-opacity: 1; stroke-width: 0; opacity: 0; }
+  60% { stroke-dashoffset: 0; fill-opacity: 0.9; stroke-width: 0.75; opacity: 1; }
+  86% { fill-opacity: 0.9; stroke-width: 0.75; opacity: 1; }
+  100% { fill-opacity: 0.9; stroke-width: 0.75; opacity: 0; }
 }
+
 @keyframes sigDrawOnce {
   0% { stroke-dashoffset: 1; fill-opacity: 0; stroke-width: 1.5; }
   70% { stroke-dashoffset: 0; fill-opacity: 0; stroke-width: 1.5; }
-  100% { stroke-dashoffset: 0; fill-opacity: 1; stroke-width: 0; }
+  100% { stroke-dashoffset: 0; fill-opacity: 0.9; stroke-width: 0.75; }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .sig-path {
     animation: none !important;
     stroke-dashoffset: 0 !important;
-    fill-opacity: 1 !important;
-    stroke-width: 0 !important;
+    fill-opacity: 0.9 !important;
+    stroke-width: 0.75 !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  .napkin-scrap,
+  .prose a {
+    transition: none !important;
   }
 }
 
-@keyframes footerDraw {
-  0% {
-    stroke-dashoffset: 1;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
+/* ------------------------------------------------------------------
+   Guestbook wall scraps (pure CSS — the ink inside is already hand-drawn)
+   ------------------------------------------------------------------ */
 
-@keyframes footerFillIn {
-  0% {
-    fill: transparent;
-    stroke-width: 1.5;
-  }
-  100% {
-    fill: url(#footerGlow);
-    stroke-width: 0;
-  }
-}
-
-/* Theme toggle. */
-.theme-toggle {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  cursor: pointer;
-  border: 1px solid var(--hairline);
-  border-radius: 9999px;
-  background: var(--surface);
-  color: var(--muted);
-  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-}
-.theme-toggle:hover {
-  color: rgb(var(--accent-rgb));
-  border-color: rgb(var(--accent-rgb) / 0.4);
-  background: var(--surface-2);
-}
-.theme-toggle:focus-visible {
-  outline: 2px solid rgb(var(--accent-rgb) / 0.7);
-  outline-offset: 3px;
-}
-.theme-toggle svg {
-  width: 14px;
-  height: 14px;
-}
-:root:not(.light) .theme-toggle .icon-sun,
-:root.light .theme-toggle .icon-moon {
-  display: none;
-}
-
-/* Custom scrollbar — the SVG itself ignores pointer events so the right
-   gutter stays clickable. Only the explicit .hit-area / .arrow-hit rects
-   inside the SVG accept clicks (set inline on those rects in Scrollbar.tsx). */
-.custom-scrollbar {
-  position: fixed;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 76px;
-  height: 80vh;
-  max-height: 80vh;
-  z-index: 50;
-  pointer-events: none;
-  overflow: visible;
-}
-
-.custom-scrollbar .hit-area,
-.custom-scrollbar .arrow-hit {
-  cursor: pointer;
-}
-
-.custom-scrollbar g:hover circle {
-  filter: brightness(1.3);
-}
-
-@media (max-width: 768px) {
-  .custom-scrollbar {
-    display: none;
-  }
-}
-
-/* Hide native scrollbar */
-html {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-html::-webkit-scrollbar {
-  display: none;
-}
-
-/* Now Playing widget */
-.now-playing-wrapper {
-  display: inline-flex;
-  align-items: center;
-}
-
-.now-playing-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: inherit;
-  white-space: nowrap;
-}
-
-.now-playing-link.paused {
-  opacity: 0.7;
-}
-
-.now-playing-link .label {
-  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted-faint);
-}
-
-.now-playing-link .title-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.now-playing-link .title-wrapper.paused {
-  opacity: 0.6;
-}
-
-.now-playing-link .title-wrapper .text-muted {
-  color: var(--muted);
-}
-
-.paused-icon {
-  font-size: 14px;
-  line-height: 1;
-  color: var(--muted);
-}
-
-/* CharWave animation */
-.char-wave {
-  display: inline-flex;
-  will-change: transform;
-}
-
-.char-wave span {
-  display: inline-block;
-  animation: charWave 1.2s ease-in-out infinite;
-}
-
-@keyframes charWave {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .char-wave span {
-    animation: none;
-    transform: none;
-  }
-}
-
-/* Tooltip */
-.tooltip-wrapper {
-  position: relative;
-  cursor: help;
-  display: inline-block;
-}
-
-.tooltip-wrapper:focus-visible {
-  outline: none;
-}
-
-.tooltip {
+.napkin-scrap {
   position: absolute;
-  bottom: 120%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 500;
-  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  color: var(--ink);
-  background: var(--panel);
-  border: 1px solid var(--hairline);
-  border-radius: 4px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 150ms ease, transform 150ms ease, visibility 0s 150ms;
-  transform-origin: bottom center;
-  z-index: 10;
-  pointer-events: none;
+  width: 11rem;
+  padding: 0.9rem 0.95rem 0.6rem;
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgba(44 44 42 / 0.14);
+  transition: transform 0.25s ease, z-index 0s;
+  overflow-wrap: break-word;
 }
 
-.tooltip::after {
+.napkin-scrap::before {
+  /* strip of tape holding the scrap down */
   content: "";
   position: absolute;
-  top: 100%;
+  top: -0.55rem;
   left: 50%;
-  transform: translateX(-50%);
-  border: 4px solid transparent;
-  border-top-color: var(--panel);
+  width: 3.2rem;
+  height: 1rem;
+  transform: translateX(-50%) rotate(-2deg);
+  background: rgba(245 222 107 / 0.55);
+  border-left: 1px dashed rgba(44 44 42 / 0.18);
+  border-right: 1px dashed rgba(44 44 42 / 0.18);
 }
 
-.tooltip-wrapper:hover .tooltip,
-.tooltip-wrapper:focus .tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(-4px);
-  transition-delay: 0s;
+.napkin-scrap:hover {
+  transform: rotate(0deg) scale(1.06) !important;
+  z-index: 50;
 }
 
-/* Ensure hover on title triggers tooltip */
-.title-wrapper:hover .tooltip-wrapper .tooltip,
-.title-wrapper:focus-within .tooltip-wrapper .tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(-4px);
-  transition-delay: 0s;
+/* ------------------------------------------------------------------
+   Signature wall — infinite canvas. Signatures are bare ink on the
+   board (no cards); pan/zoom transform lives on .wall-world.
+   ------------------------------------------------------------------ */
+
+.wall-canvas {
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .char-wave span {
-    animation: none;
-    transform: none;
-  }
-  .np-bar { animation: none; transform: scaleY(0.6); }
-  .sig-path {
-    animation: none !important;
-    stroke-dashoffset: 0 !important;
-    fill-opacity: 1 !important;
-    stroke-width: 0 !important;
-  }
-  .char-wave span {
-    animation: none;
-    transform: none;
-  }
+.wall-canvas.is-panning {
+  cursor: grabbing;
 }
 
-/* ========================================
-   NOW PLAYING WIDGET — SPATIAL GLASSMORPHISM
-   Top-right corner of the page. Top row: vinyl
-   on the left, "NOW PLAYING" + title stacked
-   on the right. On hover, a large frosted glass
-   panel slides down centered under the row,
-   showing the artist (large) and album (small).
-   ======================================== */
-
-.now-playing-widget {
-  position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
-  /* Cap the widget so very long titles can't shove the header layout.
-     Title gets ellipsis once it exceeds this width. */
-  max-width: min(280px, calc(100vw - 80px));
-}
-
-.widget-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-  width: 100%;
-}
-
-.vinyl-area {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-}
-
-/* The disc is rotated via rAF (in VinylDisc.tsx) so pause holds the exact
-   current frame instead of snapping to a keyframe boundary. */
-.vinyl-disc {
-  width: 44px;
-  height: 44px;
-  transform-origin: center;
-  will-change: transform;
-  transition: filter 400ms ease;
-}
-
-.vinyl-disc.paused {
-  filter: saturate(0.85) brightness(0.92);
-}
-
-.ambient-glow {
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  filter: blur(20px);
-  opacity: 0.28;
-  will-change: opacity, transform;
-  animation: glowPulse 3s ease-in-out infinite;
-  transition: opacity 500ms ease-out, background 500ms ease-out;
-  pointer-events: none;
-}
-
-.ambient-glow.paused {
-  animation: none;
-  opacity: 0.08;
-  transform: scale(0.95);
-}
-
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.28; transform: scale(1); }
-  50%      { opacity: 0.42; transform: scale(1.1); }
-}
-
-.text-content {
-  display: flex;
-  flex: 1 1 auto;
-  min-width: 0;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.status-label {
-  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--muted-faint);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.title-wrapper {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
-}
-
-/* CharWave — each character bounces vertically; the per-letter animation-delay
-   creates the undulating stagger (~75ms between letters). Title is rendered
-   in the project's display serif (Newsreader) and picks up the album color.
-   `.title-wrapper` above clips + ellipsizes, so this just needs to render. */
-.char-wave {
-  display: inline-block;
-  vertical-align: bottom;
-  will-change: transform;
-  font-family: "Newsreader", Georgia, ui-serif, serif;
-  font-weight: 600;
-  font-size: 18px;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  filter: saturate(1.5);
-  transition: filter 300ms ease, color 400ms ease;
-  white-space: nowrap;
-  max-width: 100%;
-}
-
-.char-wave.playing {
-  filter: saturate(1.8);
-}
-
-.char-wave.paused {
-  filter: saturate(1) brightness(0.85);
-}
-
-.char-wave > span {
-  display: inline-block;
-  animation: charWave 1.2s ease-in-out infinite;
-  animation-play-state: paused;
-}
-
-.char-wave.playing > span {
-  animation-play-state: running;
-}
-
-@keyframes charWave {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-3px); }
-}
-
-/* Glass Tooltip — purely neutral frosted panel, no album color bleeds in.
-   The colored glow from the disc behind it is the only chromatic source.
-   Centered under the row, wide enough to read as a card, with a crisp
-   top-edge highlight and a soft outer drop shadow. */
-.glass-tooltip {
-  position: absolute;
-  top: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-6px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 18px 28px;
-  min-width: 180px;
-  border-radius: 14px;
-  white-space: nowrap;
-  pointer-events: none;
-
-  /* Neutral glass — light base in light theme, dark in dark, no color cast. */
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(24px) saturate(1.4);
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.5) inset,
-    0 12px 36px rgba(0, 0, 0, 0.18);
-  z-index: 20;
-
+/* each signature: fade in with a stagger, then sit still */
+.signature-element {
   opacity: 0;
-  transition:
-    opacity 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity;
+  animation: 0.2s ease-out both signature-reveal;
 }
 
-:root:not(.light) .glass-tooltip {
-  background: rgba(20, 20, 20, 0.55);
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 12px 36px rgba(0, 0, 0, 0.5);
+@keyframes signature-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.glass-tooltip.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+/* the ink itself ignores the pointer; an invisible hit area on top
+   opens the detail dialog (and yields to a drag after 8px) */
+.signature-hit {
+  cursor: pointer;
+  touch-action: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  width: 60%;
+  height: 60%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.tooltip-artist {
-  font-family: "Newsreader", Georgia, ui-serif, serif;
-  font-weight: 600;
-  font-size: 18px;
-  line-height: 1.2;
-  color: var(--ink);
-  letter-spacing: -0.01em;
+.signature-hit:focus-visible {
+  outline: 2px dashed var(--color-charcoal);
+  outline-offset: 4px;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
 
-.tooltip-album {
-  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  font-size: 12px;
-  line-height: 1.3;
-  color: var(--muted);
-  font-weight: 400;
-  letter-spacing: 0.01em;
+/* floating chrome — the reference keeps everything in two fixed pills */
+.wall-chrome {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-charcoal);
+  border-radius: 18px 8px 16px 10px / 10px 16px 8px 18px;
+  box-shadow: 0 1px 3px rgba(44 44 42 / 0.14);
 }
 
-@media (max-width: 640px) {
-  .glass-tooltip {
-    left: 50%;
-    transform: translateX(-50%) translateY(-6px);
-    min-width: 0;
-    padding: 14px 20px;
-  }
-  .glass-tooltip.visible {
-    transform: translateX(-50%) translateY(0);
-  }
+.wall-ctl-btn {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 0;
+  background: transparent;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  color: var(--color-charcoal-light);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.wall-ctl-btn:hover {
+  background: var(--highlighter-yellow);
+  color: var(--color-charcoal);
+}
+
+.wall-ctl-btn:active {
+  transform: scale(0.94);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vinyl-disc,
-  .ambient-glow,
-  .char-wave > span {
-    animation: none !important;
-    transform: none !important;
-  }
-  .glass-tooltip {
-    transition: opacity 120ms linear;
-    transform: translateX(-50%);
-  }
-  .glass-tooltip.visible {
-    transform: translateX(-50%);
+  .signature-element {
+    animation: none;
+    opacity: 1;
   }
 }

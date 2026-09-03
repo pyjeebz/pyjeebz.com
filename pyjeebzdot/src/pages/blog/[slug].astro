@@ -3,7 +3,9 @@ export const prerender = true;
 
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
+import DrawnLine from "../../components/napkin/DrawnLine.astro";
 import Signature from "../../components/react/Signature";
+import SocialIcons from "../../components/SocialIcons.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -24,26 +26,27 @@ const dateStr = post.data.date.toLocaleDateString("en-US", {
   <article>
     <a
       href="/blog"
-      class="text-2xs uppercase tracking-[0.18em] text-muted-faint hover:text-accent transition-colors"
+      data-napkin="underline"
+      class="font-mono text-2xs uppercase tracking-[0.18em] text-muted-faint hover:text-charcoal transition-colors w-fit"
     >
       ← ramblings
     </a>
     <h1
-      class="font-serif text-[clamp(1.9rem,5vw,2.6rem)] font-medium text-off-white tracking-tight mt-6 mb-2"
+      class="font-display text-[clamp(1.9rem,5vw,2.6rem)] font-normal text-charcoal tracking-tight mt-6 mb-2"
     >
       {post.data.title}
     </h1>
-    <p
-      class="font-mono text-2xs uppercase tracking-[0.14em] text-muted-faint mb-10 pb-6 border-b border-hairline"
-    >
+    <p class="font-mono text-2xs uppercase tracking-[0.14em] text-muted-faint mb-4">
       {dateStr}
     </p>
+    <DrawnLine class="mb-10 opacity-30" />
     <div class="prose">
       <Content />
     </div>
-    <div class="mt-14 pt-8 border-t border-hairline flex items-center gap-3">
-      <span class="font-serif italic text-muted">signed,</span>
+    <div class="mt-14 flex items-center gap-3">
+      <span class="italic text-muted">signed,</span>
       <Signature client:visible mode="once" width={120} height={46} />
     </div>
+    <SocialIcons size={16} class="mt-6" />
   </article>
 </Layout>

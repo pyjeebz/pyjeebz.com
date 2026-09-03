@@ -1,0 +1,25 @@
+---
+interface Props {
+  color?: "yellow" | "pink" | "blue" | "green";
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { color = "yellow", class: className, ...rest } = Astro.props;
+
+const fillVar: Record<string, string> = {
+  yellow: "var(--highlighter-yellow)",
+  pink: "var(--highlighter-pink)",
+  blue: "var(--highlighter-blue)",
+  green: "var(--highlighter-green)",
+};
+---
+
+<mark
+  data-napkin="highlight"
+  style={`--drawably-fill: ${fillVar[color]}; background: none; color: inherit; padding: 0 0.15em;`}
+  class={className}
+  {...rest}
+>
+  <slot />
+</mark>

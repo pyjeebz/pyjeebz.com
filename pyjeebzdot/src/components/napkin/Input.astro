@@ -1,0 +1,32 @@
+---
+// drawablyInput attaches to the WRAPPER containing the real input.
+interface Props {
+  type?: "text" | "email" | "url" | "tel" | "search" | "password" | "number";
+  name?: string;
+  placeholder?: string;
+  required?: boolean;
+  maxlength?: number;
+  value?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { type = "text", name, placeholder, required, maxlength, value, class: className, ...rest } = Astro.props;
+---
+
+<label
+  data-napkin="input"
+  class:list={["block", className]}
+  {...rest}
+>
+  <span class="sr-only">{placeholder}</span>
+  <input
+    type={type}
+    name={name}
+    placeholder={placeholder}
+    required={required}
+    maxlength={maxlength}
+    value={value}
+    class="w-full bg-transparent font-body text-charcoal placeholder:text-muted-faint px-3 py-2 focus:outline-none"
+  />
+</label>

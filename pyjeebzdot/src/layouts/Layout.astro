@@ -1,8 +1,6 @@
 ---
-import ThemeToggle from "../components/ThemeToggle.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import ScrollbarWrapper from "../components/react/ScrollbarWrapper";
-import SocialIcons from "../components/SocialIcons";
+import DrawnLine from "../components/napkin/DrawnLine.astro";
 
 import "../styles/global.css";
 
@@ -14,9 +12,14 @@ interface Props {
   wide?: boolean;
   /** Drop the column entirely so a page can run full-bleed. */
   bleed?: boolean;
+  /**
+   * The page owns the whole viewport (e.g. the signature wall canvas):
+   * no padding, no masthead, no footer.
+   */
+  bare?: boolean;
 }
 
-const { title, showHeader = true, wide = false, bleed = false } = Astro.props;
+const { title, showHeader = true, wide = false, bleed = false, bare = false } = Astro.props;
 
 const romanYear = (() => {
   const vals: [number, string][] = [
@@ -33,7 +36,7 @@ const romanYear = (() => {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="theme-color" content="#0c0b09" />
+    <meta name="theme-color" content="#F4F1EA" />
     <meta name="description" content="Mujeeb's corner of the internet. Mostly held together with code and optimism." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -41,6 +44,13 @@ const romanYear = (() => {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="generator" content="pyjeebz" />
     <title>{title}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Kalam:wght@300;400;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pyjeebz.com" />
@@ -54,65 +64,34 @@ const romanYear = (() => {
     <meta property="twitter:description" content="Mujeeb's corner of the internet. Mostly held together with code and optimism." />
     <meta property="twitter:image" content="/card-preview.jpeg" />
 
-    <script is:inline>
-      // Applied before paint so the chosen theme never flashes.
-      (function () {
-        var root = document.documentElement;
-        var saved = null;
-        try { saved = localStorage.getItem("pj-theme"); } catch (e) {}
-        var light =
-          saved === "light" ||
-          (!saved && window.matchMedia("(prefers-color-scheme: light)").matches);
-        if (light) root.classList.add("light");
-
-        function paintMeta() {
-          var m = document.querySelector('meta[name="theme-color"]');
-          if (!m) return;
-          var bg = getComputedStyle(root).getPropertyValue("--bg").trim();
-          if (bg) m.setAttribute("content", bg);
-        }
-
-        window.__pjTheme = {
-          isLight: function () { return root.classList.contains("light"); },
-          toggle: function () {
-            var isLight = root.classList.toggle("light");
-            try { localStorage.setItem("pj-theme", isLight ? "light" : "dark"); } catch (e) {}
-            paintMeta();
-            try { window.dispatchEvent(new CustomEvent("pj:theme")); } catch (e) {}
-            return isLight;
-          },
-        };
-        document.addEventListener("DOMContentLoaded", paintMeta);
-      })();
+    <script>
+      import "../scripts/napkin";
     </script>
 
   </head>
-  <body class="bg-black-001 text-off-white min-h-screen font-sans antialiased">
+  <body class="paper-texture bg-paper text-charcoal font-body min-h-screen antialiased">
     <div
       class:list={[
-        "max-w-2xl mx-auto min-h-screen flex flex-col px-6 sm:px-8 py-12 sm:py-16 md:py-20",
-        bleed ? "max-w-none" : wide ? "max-w-3xl" : "",
+        "min-h-screen flex flex-col",
+        bare
+          ? "max-w-none"
+          : `max-w-2xl mx-auto px-6 sm:px-8 py-12 sm:py-16 md:py-20 ${bleed ? "max-w-none" : wide ? "max-w-3xl" : ""}`,
       ]}
     >
       <main class="min-w-0 flex-1">
-        {showHeader && <SiteHeader home={Astro.url.pathname === "/"} />}
+        {showHeader && !bare && <SiteHeader home={Astro.url.pathname === "/"} />}
         <slot />
       </main>
-      <footer
-        class="mt-20 pt-6 border-t border-hairline flex flex-wrap items-center justify-between gap-x-6 gap-y-3 text-2xs uppercase tracking-[0.18em] text-muted-faint"
-      >
-        <p class="flex items-center gap-x-3">
-          <span>© {romanYear}</span>
-          <span class="text-muted-faint/35 select-none" aria-hidden="true">·</span>
-          <span>Mujeeb</span>
-        </p>
-        <div class="flex items-center gap-4">
-          <SocialIcons />
-          <ThemeToggle />
-        </div>
-      </footer>
+      {!bare && (
+        <footer class="mt-20 text-2xs uppercase tracking-[0.18em] text-muted-faint">
+          <DrawnLine class="mb-5 opacity-50" />
+          <p class="flex items-center gap-x-3">
+            <span>© {romanYear}</span>
+            <span class="text-muted-faint/35 select-none" aria-hidden="true">·</span>
+            <span>Mujeeb</span>
+          </p>
+        </footer>
+      )}
     </div>
-
-    <ScrollbarWrapper client:only="react" />
   </body>
 </html>

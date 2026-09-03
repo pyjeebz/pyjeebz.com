@@ -1,0 +1,21 @@
+---
+// drawablyCheckbox attaches to the WRAPPER containing the real checkbox.
+interface Props {
+  name?: string;
+  checked?: boolean;
+  required?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { name, checked, required, class: className, ...rest } = Astro.props;
+---
+
+<label
+  data-napkin="checkbox"
+  class:list={["inline-flex items-center gap-2 cursor-pointer select-none", className]}
+  {...rest}
+>
+  <input type="checkbox" name={name} checked={checked} required={required} class="sr-only" />
+  <span class="font-body text-base"><slot /></span>
+</label>

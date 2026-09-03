@@ -1,0 +1,60 @@
+---
+import DrawnLine from "./napkin/DrawnLine.astro";
+
+const items = [
+  {
+    title: "PreScale",
+    url: "https://prescale.dev",
+    description: "Open-source load tester that tells you what breaks first, at what load, and why.",
+  },
+  {
+    title: "Why",
+    url: "https://github.com/pyjeebz/why",
+    description: "The decision trail behind any line of code: commits, PRs, and the issues behind them.",
+  },
+  {
+    title: "Ports",
+    url: "https://ports.tools",
+    description: "See what's running on your machine, by project, and kill it by name.",
+  },
+  {
+    title: "Toss",
+    url: "https://toss.pyjeebz.com",
+    description: "Move text between your devices: paste on one, it appears on the rest.",
+  },
+];
+---
+
+<section>
+  <div class="mb-8">
+    <h2 class="font-display text-2xl sm:text-[1.7rem] text-charcoal tracking-tight">Projects</h2>
+    <DrawnLine class="mt-3 w-40" />
+  </div>
+
+  <ul>
+    {
+      items.map((item) => (
+        <li>
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex flex-wrap items-baseline gap-x-2 py-4 border-b border-charcoal/10 last:border-b-0"
+          >
+            <span class="font-display text-lg text-charcoal">{item.title}</span>
+            <span class="text-muted-faint select-none" aria-hidden="true">—</span>
+            <span class="min-w-0 flex-1 text-[15px] leading-relaxed text-muted">
+              {item.description}
+            </span>
+            <span
+              class="shrink-0 font-mono text-muted-faint opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-hidden="true"
+            >
+              ↗
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

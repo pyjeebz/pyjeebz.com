@@ -1,0 +1,33 @@
+---
+interface Props {
+  /** Background wash: white (default), paper (blends into the page), or muted. */
+  bg?: "white" | "paper" | "muted";
+  /** Tilt in degrees. Omit for a random -2..2 pick per render. */
+  rotate?: number;
+  /** Pass roughness/boil/width straight through to drawably. */
+  roughness?: number;
+  boil?: number;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { bg = "white", rotate, roughness, boil, class: className, ...rest } = Astro.props;
+
+const tilt = rotate ?? (Math.floor(Math.random() * 5) - 2);
+
+const bgClass = { white: "bg-surface", paper: "bg-transparent", muted: "bg-charcoal/5" }[bg];
+
+const opts: Record<string, unknown> = {};
+if (roughness !== undefined) opts.roughness = roughness;
+if (boil !== undefined) opts.boil = boil;
+---
+
+<div
+  data-napkin="card"
+  data-napkin-opts={JSON.stringify(opts)}
+  class:list={[bgClass, "px-6 py-5", className]}
+  style={`transform: rotate(${tilt}deg);`}
+  {...rest}
+>
+  <slot />
+</div>
