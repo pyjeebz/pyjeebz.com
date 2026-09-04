@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, usePaginatedQuery } from "convex/react";
 import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react";
 import { api } from "../../../convex/_generated/api";
@@ -369,6 +369,17 @@ export default function Guestbook() {
     setSigningIn(true);
     void signIn("github", { redirectTo: "/guestbook" });
   };
+
+  // Coming back to this tab via browser-back restores the frozen "opening
+  // github…" state (bfcache); clear it, and drop it once auth lands.
+  useEffect(() => {
+    const reset = () => setSigningIn(false);
+    window.addEventListener("pageshow", reset);
+    return () => window.removeEventListener("pageshow", reset);
+  }, []);
+  useEffect(() => {
+    if (isAuthenticated) setSigningIn(false);
+  }, [isAuthenticated]);
 
   if (isLoading) {
     return (

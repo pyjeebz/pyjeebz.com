@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -165,5 +165,14 @@ export const sign = mutation({
 
     const id = await ctx.db.insert("guestbook", { ...fields, userId });
     return { ok: true, id, replaced: false };
+  },
+});
+
+/** Moderation tool — remove one entry by id. Internal, never exposed over HTTP. */
+export const removeEntry = internalMutation({
+  args: { id: v.id("guestbook") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+    return { ok: true };
   },
 });
