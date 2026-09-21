@@ -1,19 +1,63 @@
 import { defineConfig } from "astro/config";
+import { unified } from "@astrojs/markdown-remark";
 
-import tailwind from "@astrojs/tailwind";
-import react from "@astrojs/react";
+import tailwindcss from "@tailwindcss/vite";
+
 import vercel from "@astrojs/vercel";
+
+import react from "@astrojs/react";
+import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
+
+import { transformerMetaHighlight } from "@shikijs/transformers";
+
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeExternalLinks from "rehype-external-links";
+
+import { vercelTheme } from "./src/lib/shiki";
+import { transformerCodeTitle } from "./src/lib/code-title";
+import { autolinkOptions, externalLinksOptions } from "./src/lib/rehype";
+import { serializeSitemap, shouldIndexPage } from "./src/lib/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "server",
-  adapter: vercel(),
-  integrations: [tailwind(), react()],
-  vite: {
-    server: {
-      // A running `astro build` churns .vercel/output and crashes the dev
-      // file-watcher, so keep build output out of the watch set.
-      watch: { ignored: ["**/.vercel/**", "**/dist/**"] },
-    },
+  site: "https://pyjeebz.com",
+  trailingSlash: "never",
+  output: "static",
+  adapter: vercel({}),
+
+  // Crawlers guess /sitemap.xml; the sitemap integration emits an index instead.
+  redirects: {
+    "/sitemap.xml": "/sitemap-index.xml",
   },
+  markdown: {
+    syntaxHighlight: "shiki",
+    shikiConfig: {
+      theme: vercelTheme,
+      wrap: false,
+      transformers: [transformerMetaHighlight(), transformerCodeTitle()],
+    },
+    processor: unified({
+      gfm: true,
+      rehypePlugins: [
+        rehypeSlug,
+        [rehypeAutolinkHeadings, autolinkOptions],
+        [rehypeExternalLinks, externalLinksOptions],
+      ],
+    }),
+  },
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
+  integrations: [
+    react(),
+    mdx(),
+    sitemap({
+      serialize: serializeSitemap,
+      filter: shouldIndexPage,
+    }),
+  ],
 });

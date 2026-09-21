@@ -1,19 +1,11 @@
 {
   "extends": "astro/tsconfigs/strict",
+  // tsx (esbuild) does not follow `extends`, so the JSX runtime must be
+  // declared here for scripts/generate-og.tsx to compile correctly.
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@convex/*": ["convex/_generated/*"],
-      "@lib/*": ["src/lib/*"],
-      "@components/*": ["src/components/*"]
-    }
+    "jsxImportSource": "react"
   },
-  "include": [
-    "src/**/*",
-    "convex/**/*",
-    "convex/_generated/**/*"
-  ]
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
 }

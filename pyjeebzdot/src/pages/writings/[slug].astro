@@ -1,0 +1,73 @@
+---
+import "../../styles/_article.css";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import { TableOfContents } from "../../components/TableOfContents.tsx";
+import { getOpenGraphImage } from "../../lib/og";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("writings");
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+type Props = {
+  entry: CollectionEntry<"writings">;
+};
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const tocHeadings = headings
+  .filter((heading) => heading.depth === 2)
+  .map((heading) => ({ slug: heading.slug, text: heading.text }));
+
+const { data } = entry;
+const description = data.seo?.description ?? data.description;
+const ogImageUrl =
+  data.seo?.ogImageUrl ?? data.image?.src ?? getOpenGraphImage(entry.id);
+const articleData = data.publishedAt
+  ? {
+      publishedAt: data.publishedAt,
+      title: data.title,
+      image: data.image?.src,
+    }
+  : undefined;
+---
+
+<Layout
+  title={`${data.title} | Mujeeb`}
+  description={description}
+  keywords={data.seo?.keywords}
+  ogImageUrl={ogImageUrl}
+  articleData={articleData}
+>
+  <TableOfContents
+    client:load
+    headings={tocHeadings}
+    title={data.shortTitle ?? data.title}
+  />
+
+  <header class="mt-8 mb-8 lg:mt-0">
+    <h1 id="article-title" class="mb-0.5">
+      {data.title}
+    </h1>
+    {
+      data.publishedAt && (
+        <p class="text-zinc-500">
+          {data.publishedAt.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
+      )
+    }
+  </header>
+  <article>
+    <Content components={{ pre: CodeBlock }} />
+  </article>
+</Layout>

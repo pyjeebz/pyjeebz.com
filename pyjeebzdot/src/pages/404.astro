@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { VictoryHand } from "../components/VictoryHand";
+---
+
+<Layout title="Page not found | Mujeeb" noIndex={true}>
+  <header class="mb-5">
+    <VictoryHand client:load />
+    <h1 class="mt-3 mb-0.5">Page not found</h1>
+    <p class="text-zinc-500">
+      The page you’re looking for doesn’t exist or moved.
+    </p>
+  </header>
+
+  <p class="text-zinc-600">
+    Head back to the <a
+      href="/"
+      class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+      >Index</a
+    >, read my <a
+      href="/writings"
+      class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+      >Writings</a
+    >, or browse the <a
+      href="/projects"
+      class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+      >Projects</a
+    > I’ve built.
+  </p>
+</Layout>

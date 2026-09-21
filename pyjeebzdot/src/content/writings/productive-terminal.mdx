@@ -1,0 +1,66 @@
+---
+title: "Productive Terminal"
+publishedAt: 2023-12-29
+status: "published"
+tags:
+  - terminal
+  - zsh
+  - ohmyzsh
+  - productive
+description: "My productive terminal setup"
+author:
+  name: "Arik Chakma"
+  twitter: "imarikchakma"
+seo:
+  keywords:
+    - terminal
+    - productivity
+    - zsh
+    - oh-my-zsh
+    - git
+    - z
+    - zsh-syntax-highlighting
+    - zsh-autosuggestions
+    - my productive terminal setup
+    - how to be productive in terminal
+---
+
+I've been using [Z-shell](https://opensource.com/article/19/9/getting-started-zsh) (Zsh), [Oh My Zsh](https://ohmyz.sh/), and [Iterm2](https://iterm2.com/) for a while now. It's a great combination and I love it. I've been using it for a while now and I've customized it to my liking with a few plugins and themes.
+
+> Zsh is a powerful shell that operates as both an interactive shell and as a scripting language interpreter.
+
+## Plugins
+
+I use the following plugins:
+
+- [git aliases](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git) - It's a collection of aliases for `git` commands. Instead of typing `git status` I can just type `gst` and it'll do the same thing.
+
+- [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) - Highlight commands while typing.
+
+- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) - Suggests commands as you type based on history and completions. Really handy when you're trying to remember a command you used a while ago especially for `git` commands.
+
+- [z - jump around](https://github.com/rupa/z) - Tracks your most used directories and allows you to jump to them quickly. I use this all the time to jump to my projects directory. Let's say I wanna jump to one of my projects, I just type `z <project-name>` and it'll jump to that directory.
+
+You can install these plugins by following the instructions on their respective GitHub repositories.
+
+## Shortcuts
+
+Here are some common shortcuts I use:
+
+- <kbd>^</kbd> + <kbd>R</kbd> - Search through your command history.
+- <kbd>⌘</kbd> + <kbd>D</kbd> - For splitting the terminal window horizontally
+  _(Iterm2)_.
+- <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>D</kbd> - For splitting the terminal window
+  vertically _(Iterm2)_.
+- <kbd>^</kbd> + <kbd>A</kbd> - Move cursor to the beginning of the line.
+- <kbd>^</kbd> + <kbd>E</kbd> - Move cursor to the end of the line. directory.
+- <kbd>^</kbd> + <kbd>W</kbd> - Delete the word before the cursor.
+- `cd -` - Switch back and forth between the current and previous directory.
+- `repeat 5 echo "Hello World"` - Repeat a command 5 times. Useful when testing rate limiting on APIs `repeat 10 curl ...`.
+
+For more shortcuts, you can use `aliases` and `functions`. I have a few of them in my `.zshrc` file. You can check them out `cat ~/.zshrc`.
+
+## Resources
+
+1. [Shortcuts to improve your Bash & zsh productivity](http://www.geekmind.net/2011/01/shortcuts-to-improve-your-bash-zsh.html)
+2. [Set keyboard shortcuts to jump to beginning or end of the line](https://stackoverflow.com/questions/6205157/how-to-set-keyboard-shortcuts-to-jump-to-beginning-end-of-line/29403520#29403520)

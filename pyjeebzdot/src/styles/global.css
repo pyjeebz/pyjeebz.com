@@ -1,331 +1,109 @@
-/* ------------------------------------------------------------------
-   Napkin — wabi-sabi, hand-drawn, lo-fi.
-   Architects Daughter = sharpie, Kalam = ballpoint, JetBrains Mono = ruler.
-   ------------------------------------------------------------------ */
+@import "tailwindcss";
 
-:root {
-  color-scheme: light;
-
-  --color-paper: #F4F1EA;
-  --color-charcoal: #2C2C2A;
-  --color-charcoal-light: #595955;
-  --color-surface: #FFFFFF;
-  --color-muted: rgba(44 44 42 / 0.62);
-  --color-muted-faint: rgba(44 44 42 / 0.38);
-
-  --highlighter-yellow: #F5DE6B;
-  --highlighter-pink: #F2A9BC;
-  --highlighter-blue: #A8C9EE;
-  --highlighter-green: #B3D6A4;
-
-  /* The one deliberate splash — deep wine, reserved for the signature. */
-  --accent-rust: #900C3F;
-
-  /* drawably theme — set once, used by every sketch on the site */
-  --drawably-stroke: #2C2C2A;
-  --drawably-fill: #2C2C2A;
-  --drawably-paper: #F4F1EA;
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/geist-variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
-html {
-  scroll-behavior: smooth;
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Arial");
+  size-adjust: 103.26%;
+  ascent-override: 97.33%;
+  descent-override: 28.57%;
+  line-gap-override: 0%;
 }
 
-body {
-  font-family: "Kalam", "Segoe Print", "Comic Sans MS", cursive;
-  color: var(--color-charcoal);
-  line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/geist-mono-variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
-/* Sketchbook paper: base tone + faint fractal-noise grain. */
-.paper-texture {
-  background-color: var(--color-paper);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+@font-face {
+  font-family: "Geist Mono Fallback";
+  src: local("Courier New"), local("CourierNewPSMT");
+  size-adjust: 99.98%;
+  ascent-override: 100.52%;
+  descent-override: 29.5%;
+  line-gap-override: 0%;
 }
 
-/* Dot-grid modifier — used only on the guestbook wall. */
-.napkin-grid {
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
-    radial-gradient(circle, rgb(44 44 42 / 0.07) 1px, transparent 1.5px);
-  background-size: 240px 240px, 26px 26px;
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/newsreader.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
 }
-
-/* Hand-drawn border fallback (guestbook scraps — no drawably chrome there). */
-.napkin-scrap {
-  border: 2px solid var(--color-charcoal);
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-}
-
-::selection {
-  background: var(--highlighter-yellow);
-  color: var(--color-charcoal);
-}
-
-:focus-visible {
-  outline: 2px dashed var(--color-charcoal);
-  outline-offset: 3px;
-  border-radius: 2px;
-}
-
-/* ------------------------------------------------------------------
-   Prose (blog posts) — sharpie headings, ballpoint body, ruler code.
-   ------------------------------------------------------------------ */
-
-.prose {
-  font-size: 1.0625rem;
-  line-height: 1.85;
-}
-
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4 {
-  font-family: "Architects Daughter", "Comic Sans MS", "Segoe Print", cursive;
-  font-weight: 400;
-  line-height: 1.25;
-  margin: 2.2em 0 0.7em;
-  letter-spacing: 0;
-}
-
-.prose h2 { font-size: 1.65em; }
-.prose h3 { font-size: 1.3em; }
-
-.prose p,
-.prose ul,
-.prose ol {
-  margin: 1.15em 0;
-}
-
-.prose li { margin: 0.35em 0; }
-
-.prose a {
-  color: var(--color-charcoal);
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--color-muted-faint);
-  transition: text-decoration-color 0.2s ease, background-size 0.2s ease;
-  background-image: linear-gradient(transparent 55%, var(--highlighter-yellow) 55%);
-  background-repeat: no-repeat;
-  background-size: 0% 100%;
-}
-
-.prose a:hover {
-  text-decoration-color: var(--color-charcoal);
-  background-size: 100% 100%;
-}
-
-.prose strong { font-weight: 700; }
-
-.prose blockquote {
-  border-left: 2px solid var(--color-charcoal-light);
-  padding-left: 1.1em;
-  margin: 1.5em 0;
-  color: var(--color-muted);
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/newsreader-italic.woff2") format("woff2");
+  font-weight: 200 800;
   font-style: italic;
+  font-display: swap;
 }
 
-.prose code {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.85em;
-  background: rgba(44 44 42 / 0.06);
-  padding: 0.15em 0.4em;
-  border-radius: 3px;
+@font-face {
+  font-family: "Newsreader Fallback";
+  src: local("Georgia");
+  size-adjust: 91.75%;
+  ascent-override: 80.11%;
+  descent-override: 28.88%;
+  line-gap-override: 0%;
 }
 
-.prose pre {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-charcoal);
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  padding: 1em 1.25em;
-  overflow-x: auto;
-  margin: 1.5em 0;
+@theme {
+  --color-selection: #a9a9a940;
+  --font-sans:
+    "Geist", "Geist Fallback", ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
+  --font-serif:
+    "Newsreader", "Newsreader Fallback", ui-serif, Georgia, "Times New Roman",
+    serif;
+  --font-mono:
+    "Geist Mono", "Geist Mono Fallback", ui-monospace, SFMono-Regular,
+    "SF Mono", Menlo, Consolas, monospace;
 }
 
-.prose pre code {
-  background: none;
-  padding: 0;
-  border-radius: 0;
-}
-
-.prose img {
-  border-radius: 4px;
-  margin: 1.5em 0;
-}
-
-.prose hr {
-  border: none;
-  height: 2px;
-  background: var(--color-charcoal);
-  opacity: 0.7;
-  transform: rotate(-0.4deg);
-  margin: 2.5em 0;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-}
-
-/* ------------------------------------------------------------------
-   Signature (MLS) — draw + fill. Charcoal ink, no glow.
-   ------------------------------------------------------------------ */
-
-/* The signature draws in ink, then the kiln-rust fill bleeds in and the ink
-   line thins (but never disappears) — pen under a wash of warm glaze. */
-@keyframes sigCycle {
-  0% { stroke-dashoffset: 1; fill-opacity: 0; stroke-width: 1.5; opacity: 1; }
-  46% { stroke-dashoffset: 0; fill-opacity: 0; stroke-width: 1.5; opacity: 1; }
-  60% { stroke-dashoffset: 0; fill-opacity: 0.9; stroke-width: 0.75; opacity: 1; }
-  86% { fill-opacity: 0.9; stroke-width: 0.75; opacity: 1; }
-  100% { fill-opacity: 0.9; stroke-width: 0.75; opacity: 0; }
-}
-
-@keyframes sigDrawOnce {
-  0% { stroke-dashoffset: 1; fill-opacity: 0; stroke-width: 1.5; }
-  70% { stroke-dashoffset: 0; fill-opacity: 0; stroke-width: 1.5; }
-  100% { stroke-dashoffset: 0; fill-opacity: 0.9; stroke-width: 0.75; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sig-path {
-    animation: none !important;
-    stroke-dashoffset: 0 !important;
-    fill-opacity: 0.9 !important;
-    stroke-width: 0.75 !important;
-  }
+@layer base {
   html {
-    scroll-behavior: auto;
+    scrollbar-gutter: stable;
   }
-  .napkin-scrap,
-  .prose a {
-    transition: none !important;
+
+  body {
+    @apply selection:bg-selection;
+    font-weight: 430;
+  }
+
+  a,
+  button,
+  [role="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  em,
+  i,
+  cite {
+    @apply font-serif font-medium text-black;
+    font-style: italic;
+    font-optical-sizing: auto;
+    letter-spacing: -0.01rem;
+    font-variation-settings: "opsz" 10;
+  }
+
+  strong {
+    @apply font-medium text-black;
   }
 }
 
-/* ------------------------------------------------------------------
-   Guestbook wall scraps (pure CSS — the ink inside is already hand-drawn)
-   ------------------------------------------------------------------ */
-
-.napkin-scrap {
-  position: absolute;
-  width: 11rem;
-  padding: 0.9rem 0.95rem 0.6rem;
-  background: var(--color-surface);
-  box-shadow: 0 1px 3px rgba(44 44 42 / 0.14);
-  transition: transform 0.25s ease, z-index 0s;
-  overflow-wrap: break-word;
-}
-
-.napkin-scrap::before {
-  /* strip of tape holding the scrap down */
-  content: "";
-  position: absolute;
-  top: -0.55rem;
-  left: 50%;
-  width: 3.2rem;
-  height: 1rem;
-  transform: translateX(-50%) rotate(-2deg);
-  background: rgba(245 222 107 / 0.55);
-  border-left: 1px dashed rgba(44 44 42 / 0.18);
-  border-right: 1px dashed rgba(44 44 42 / 0.18);
-}
-
-.napkin-scrap:hover {
-  transform: rotate(0deg) scale(1.06) !important;
-  z-index: 50;
-}
-
-/* ------------------------------------------------------------------
-   Signature wall — infinite canvas. Signatures are bare ink on the
-   board (no cards); pan/zoom transform lives on .wall-world.
-   ------------------------------------------------------------------ */
-
-.wall-canvas {
-  touch-action: none;
-  cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.wall-canvas.is-panning {
-  cursor: grabbing;
-}
-
-/* each signature: fade in with a stagger, then sit still */
-.signature-element {
-  opacity: 0;
-  will-change: opacity;
-  animation: 0.2s ease-out both signature-reveal;
-}
-
-@keyframes signature-reveal {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* the ink itself ignores the pointer; an invisible hit area on top
-   opens the detail dialog (and yields to a drag after 8px) */
-.signature-hit {
-  cursor: pointer;
-  touch-action: none;
-  background: none;
-  border: 0;
-  padding: 0;
-  width: 60%;
-  height: 60%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.signature-hit:focus-visible {
-  outline: 2px dashed var(--color-charcoal);
-  outline-offset: 4px;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-}
-
-/* floating chrome — the reference keeps everything in two fixed pills */
-.wall-chrome {
-  position: fixed;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.3rem;
-  background: var(--color-surface);
-  border: 2px solid var(--color-charcoal);
-  border-radius: 18px 8px 16px 10px / 10px 16px 8px 18px;
-  box-shadow: 0 1px 3px rgba(44 44 42 / 0.14);
-}
-
-.wall-ctl-btn {
-  display: grid;
-  place-items: center;
-  width: 1.9rem;
-  height: 1.9rem;
-  border: 0;
-  background: transparent;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  color: var(--color-charcoal-light);
-  cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease;
-}
-
-.wall-ctl-btn:hover {
-  background: var(--highlighter-yellow);
-  color: var(--color-charcoal);
-}
-
-.wall-ctl-btn:active {
-  transform: scale(0.94);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .signature-element {
-    animation: none;
-    opacity: 1;
-  }
+@utility top-blur {
+  -webkit-mask-image: linear-gradient(to bottom, #000 25%, transparent);
+  mask-image: linear-gradient(to bottom, #000 25%, transparent);
 }
