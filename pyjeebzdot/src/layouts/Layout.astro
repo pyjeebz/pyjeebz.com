@@ -185,14 +185,12 @@ const ogImage = ogImageUrl || `${siteConfig.url}/images/og-image.png`;
     </main>
 
     <script>
+      // cuelume's delegated listeners cover [data-cuelume-*] elements anywhere
+      // on the page, including ones added later by islands.
+      import { bind } from "cuelume";
       import { sound } from "../lib/sound";
 
-      for (const el of document.querySelectorAll("[data-sound-hover]")) {
-        el.addEventListener("mouseenter", () => sound.hoverTick());
-      }
-      for (const el of document.querySelectorAll("[data-sound-nav]")) {
-        el.addEventListener("click", () => sound.nav());
-      }
+      bind();
 
       window.addEventListener("keydown", (event) => {
         if (event.key !== "m" && event.key !== "M") return;
