@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { LogoMark } from "./LogoMark";
 import { WorkRow, type Work } from "./WorkRow";
 import { ChevronRightIcon } from "../icons/ChevronRightIcon";
 import { cn } from "../../lib/classname";
@@ -9,7 +8,6 @@ import { sound } from "../../lib/sound";
 export type Company = {
   company: string;
   tagline: string;
-  logo?: string;
   startDate: string;
   // Omit while still there; the row then reads "<startDate> – Present".
   endDate?: string;
@@ -44,7 +42,6 @@ export function CompanyRow(props: CompanyRowProps) {
         className="group ml-1 flex w-full items-center justify-between gap-6 py-2.5 text-left outline-none focus-visible:bg-zinc-100 focus-visible:ring focus-visible:ring-zinc-300"
       >
         <span className="flex shrink-0 items-center gap-2.5 group-hover:text-zinc-500">
-          <LogoMark name={company.company} logo={company.logo} />
           <span className="font-medium transition-colors">
             {company.company}
           </span>
