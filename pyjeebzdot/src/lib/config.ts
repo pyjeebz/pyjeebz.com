@@ -1,7 +1,7 @@
 export const siteConfig = {
   url: "https://pyjeebz.com",
-  title: "Mujeeb - Developer, creator.",
-  description: "Developer, content creator, and an explorer.",
+  title: "Mujeeb - Computational Thinker",
+  description: "Mujeeb - Computational Thinker",
   keywords: [
     "Mujeeb",
     "Mujeeb Lawal-Saka",
