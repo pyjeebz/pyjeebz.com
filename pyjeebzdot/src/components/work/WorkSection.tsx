@@ -1,106 +1,53 @@
 import { CompanyRow, type Company } from "./CompanyRow";
-import { CourseIcon } from "../icons/CourseIcon";
-import { DatabaseIcon } from "../icons/DatabaseIcon";
-import { DocIcon } from "../icons/DocIcon";
-import { LayersIcon } from "../icons/LayersIcon";
-import { MobileIcon } from "../icons/MobileIcon";
-import { NodeTreeIcon } from "../icons/NodeTreeIcon";
 import { RocketIcon } from "../icons/RocketIcon";
-import { SendIcon } from "../icons/SendIcon";
 import { ServerIcon } from "../icons/ServerIcon";
 import { SparkleIcon } from "../icons/SparkleIcon";
 
 const work: Company[] = [
   {
-    company: "Towards Data Science",
-    tagline: "Home for Data Science and AI",
-    logo: "/logos/tds.png",
-    startDate: "2026",
+    company: "DGR Inc",
+    tagline: "Cloud migration & solutions consulting",
+    startDate: "2023",
+    endDate: "2025",
     works: [
       {
-        name: "Editorial CMS",
-        tagline: "Rich-text publishing with collaboration",
-        icon: DocIcon,
+        name: "Python Microservices",
+        tagline: "AWS + Kubernetes",
+        icon: ServerIcon,
+        description: (
+          <p>
+            Built Python microservices and internal developer infrastructure.
+            Owned the full cycle — system design, implementation, testing,
+            deployment, and code reviews.
+          </p>
+        ),
       },
       {
-        name: "WordPress Migration",
-        tagline: "Moved the publication off WordPress",
-        icon: DatabaseIcon,
+        name: "predict",
+        tagline: "ML-powered autoscaling on AWS",
+        icon: SparkleIcon,
+        href: "https://github.com/pyjeebz/predict",
+        linkLabel: "See on GitHub",
+        description: (
+          <p>
+            Predictive auto-scaling for e-commerce. It used ML on CloudWatch
+            metrics to forecast traffic surges and scale the fleet ahead of
+            them. Adopted in the company for an ecommerce customer.
+          </p>
+        ),
       },
     ],
   },
   {
-    company: "roadmap.sh",
-    tagline: "Developer Roadmaps",
-    logo: "/logos/roadmap.svg",
-    startDate: "2023",
+    company: "360ace",
+    tagline: "Software Engineer",
+    startDate: "2022",
+    endDate: "2023",
     works: [
       {
-        name: "Lesson Packs",
-        tagline: "Bite-sized lessons with progress & chat",
-        icon: LayersIcon,
-        href: "https://roadmap.sh/packs",
-      },
-      {
-        name: "Back-office Monolith",
-        tagline: "Containerized admin & content platform",
-        icon: ServerIcon,
-      },
-      {
-        name: "iOS App",
-        tagline: "Native app with AI chat & purchases",
-        icon: MobileIcon,
-      },
-      {
-        name: "Platform Migration",
-        tagline: "Rebuilt the platform on a modern stack",
+        name: "Software Engineer",
+        tagline: "Full-time role",
         icon: RocketIcon,
-        href: "/writings/the-better-migration",
-        linkLabel: "Read the write-up",
-        date: "Jan 2025",
-        description: (
-          <p>
-            Migrated the platform from Astro to a modern React Router + TanStack
-            Query stack, cutting <em>build times by 40%</em> while improving
-            page loads and developer experience.
-          </p>
-        ),
-      },
-      {
-        name: "AI Tutor",
-        tagline: "AI tutoring across topics & roadmaps",
-        icon: SparkleIcon,
-        href: "https://roadmap.sh/ai",
-      },
-      {
-        name: "Course Platform",
-        tagline: "Interactive courses with in-browser SQL",
-        icon: CourseIcon,
-        href: "https://roadmap.sh/courses/sql",
-      },
-      {
-        name: "Roadmaps Editor",
-        tagline: "Create, fork & share your own roadmaps",
-        icon: NodeTreeIcon,
-        href: "https://draw.roadmap.sh",
-        date: "Sep 2023",
-        description: (
-          <p>
-            A custom editor that replaced our manual Balsamiq workflow. A
-            roadmap that once took{" "}
-            <strong>~2 days to assemble now takes 4-5 hours</strong>, with zero
-            upkeep after an edit. Users have built <em>300k+</em> of their own
-            since.
-          </p>
-        ),
-      },
-      {
-        name: "Scoop",
-        tagline: "Email platform with segmentation at scale",
-        icon: SendIcon,
-        date: "Oct 2023",
-        description:
-          "An email platform built from the ground up, with audience segmentation, automations, and throttled high-volume sends. Since retired for a managed provider, but it ran our newsletters at scale for years.",
       },
     ],
   },
