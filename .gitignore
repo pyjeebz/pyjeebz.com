@@ -36,3 +36,4 @@ bun.lock
 
 # claude code session data
 .claude/
+.agent/
