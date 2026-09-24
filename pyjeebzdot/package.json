@@ -16,8 +16,8 @@
     "astro": "astro",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "generate:icons": "tsx ./scripts/generate-icons.ts",
-    "generate:og": "tsx ./scripts/generate-og.tsx"
+    "generate:og": "tsx ./scripts/generate-og.tsx",
+    "generate:favicon": "tsx ./scripts/generate-favicon.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.2",
@@ -30,6 +30,7 @@
     "@types/react-dom": "^19.2.3",
     "astro": "^6.4.4",
     "clsx": "^2.1.1",
+    "cuelume": "^0.2.2",
     "motion": "^12.40.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -46,6 +47,7 @@
     "@shikijs/transformers": "^4.2.0",
     "@types/hast": "^3.0.4",
     "gray-matter": "^4.0.3",
+    "png-to-ico": "^3.0.2",
     "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
