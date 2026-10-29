@@ -1,0 +1,15 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { SignatureWall } from "../../components/guestbook/SignatureWall";
+---
+
+<Layout
+  title="Signature wall | Mujeeb"
+  description="Everyone who’s signed Mujeeb’s guestbook, on one wall."
+  fullscreen
+>
+  <SignatureWall client:load />
+  <noscript>
+    <p class="p-4 text-sm text-zinc-500">The wall needs JavaScript, sorry.</p>
+  </noscript>
+</Layout>

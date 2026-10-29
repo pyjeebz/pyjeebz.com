@@ -1,0 +1,18 @@
+# A local Postgres for the guestbook. Production uses Neon; locally:
+#   docker compose up -d
+#   DATABASE_URL=postgres://pyjeebz:pyjeebz@localhost:5434/guestbook  (in .env)
+#   npm run db:migrate
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: pyjeebz
+      POSTGRES_PASSWORD: pyjeebz
+      POSTGRES_DB: guestbook
+    ports:
+      - "5434:5432"
+    volumes:
+      - guestbook:/var/lib/postgresql/data
+
+volumes:
+  guestbook:

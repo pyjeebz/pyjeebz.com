@@ -1,0 +1,24 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { BackButton } from "../../components/BackButton";
+import { Guestbook } from "../../components/guestbook/Guestbook";
+---
+
+<Layout
+  title="Guestbook | Mujeeb"
+  description="Leave your signature in Mujeeb’s guestbook."
+>
+  <header class="mb-8">
+    <BackButton href="/" label="Index" />
+    <h1 class="mt-8 mb-0.5">Guestbook</h1>
+    <p class="text-zinc-500">
+      Thanks for stopping by. Leave your signature with a mouse, a finger, or a
+      pen.
+    </p>
+  </header>
+
+  <Guestbook client:load />
+  <noscript>
+    <p class="text-sm text-zinc-500">Signing needs JavaScript, sorry.</p>
+  </noscript>
+</Layout>
