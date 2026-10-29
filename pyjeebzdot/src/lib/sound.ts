@@ -5,12 +5,66 @@
 // also keeps its declarative bind() cues behind the same gate.
 
 import { play, setEnabled, setVolume, type SoundName } from "cuelume";
+import type { Voice } from "./spectrum";
 
 const MUTED_KEY = "pyjeebz:sound-muted";
 const CHANGE_EVENT = "pyjeebz:sound-change";
 
+// The playable spectrum: nine columns, nine notes of C major pentatonic
+// (C4 up to G5) — any run across them sounds like it was meant to.
+const PENTATONIC = [0, 2, 4, 7, 9, 12, 14, 16, 19];
+const C4 = 261.63;
+
+// Each voice is a few sine/triangle/saw partials through a lowpass, with a
+// quick attack and an exponential ring-out. [frequency ratio, gain, wave].
+const VOICE_SPECS: Record<
+  Voice,
+  {
+    partials: [number, number, OscillatorType][];
+    attack: number;
+    decay: number;
+    cutoff: number;
+  }
+> = {
+  // A struck bell: the fundamental plus its inharmonic 2.76× overtone.
+  bell: {
+    partials: [
+      [1, 1, "sine"],
+      [2.76, 0.22, "sine"],
+    ],
+    attack: 0.004,
+    decay: 1.4,
+    cutoff: 6000,
+  },
+  // Glassy: an octave up, a faint high shimmer, a long tail.
+  glass: {
+    partials: [
+      [2, 0.8, "sine"],
+      [5.4, 0.08, "sine"],
+    ],
+    attack: 0.003,
+    decay: 1.9,
+    cutoff: 9000,
+  },
+  // Soft: a rounded triangle, felted.
+  soft: {
+    partials: [[1, 1, "triangle"]],
+    attack: 0.02,
+    decay: 0.9,
+    cutoff: 1800,
+  },
+  // Warm: a sawtooth under a low filter, like a reed.
+  warm: {
+    partials: [[1, 0.5, "sawtooth"]],
+    attack: 0.015,
+    decay: 1.1,
+    cutoff: 950,
+  },
+};
+
 class SoundEngine {
   private hoverMql: MediaQueryList | null = null;
+  private ctx: AudioContext | null = null;
 
   constructor() {
     if (typeof window === "undefined") return;
@@ -99,6 +153,63 @@ class SoundEngine {
   // spanning the whole trace (the draw animation is timed to fit inside it).
   signature() {
     this.cue("arrival");
+  }
+
+  // Clicking the footer over to its next spectrum palette.
+  paletteSwap() {
+    this.cue("toggle");
+  }
+
+  // Lifting the pen onto the guestbook pad.
+  penDown() {
+    this.cue("whisper");
+  }
+
+  // One note of the playable spectrum: column 0–8, in the palette's voice.
+  // cuelume's cues are fixed recipes, so the notes get their own small synth
+  // (and their own AudioContext) behind the same mute preference.
+  note(step: number, voice: Voice) {
+    if (this.isMuted()) return;
+    const ctx = this.audio();
+    if (!ctx) return;
+
+    const spec = VOICE_SPECS[voice];
+    const freq = C4 * 2 ** (PENTATONIC[step % PENTATONIC.length] / 12);
+    const now = ctx.currentTime;
+    const end = now + spec.attack + spec.decay;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = spec.cutoff;
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0, now);
+    env.gain.linearRampToValueAtTime(0.09, now + spec.attack);
+    env.gain.exponentialRampToValueAtTime(0.0001, end);
+    filter.connect(env).connect(ctx.destination);
+
+    for (const [ratio, gain, type] of spec.partials) {
+      const osc = ctx.createOscillator();
+      osc.type = type;
+      osc.frequency.value = freq * ratio;
+      const level = ctx.createGain();
+      level.gain.value = gain;
+      osc.connect(level).connect(filter);
+      osc.start(now);
+      osc.stop(end + 0.05);
+    }
+  }
+
+  private audio(): AudioContext | null {
+    if (typeof window === "undefined" || !window.AudioContext) return null;
+    try {
+      this.ctx ??= new AudioContext();
+      // Browsers hold a new context until the page has had a click or key
+      // press; until then this quietly does nothing.
+      if (this.ctx.state === "suspended") this.ctx.resume().catch(() => {});
+      return this.ctx;
+    } catch {
+      return null;
+    }
   }
 
   // The 404 scribble striking the signature out — a short "wrong" buzz as the

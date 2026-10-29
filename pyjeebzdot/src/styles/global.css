@@ -59,7 +59,10 @@
 }
 
 @theme {
-  --color-selection: #a9a9a940;
+  /* The footer palette's accent (lib/spectrum.ts — ACCENTS), set on the root
+     by the footer and by the early script in layouts/Layout.astro. */
+  --color-accent: #0358f7;
+  --color-selection: color-mix(in srgb, var(--color-accent) 22%, transparent);
   --font-sans:
     "Geist", "Geist Fallback", ui-sans-serif, system-ui, -apple-system,
     sans-serif;
@@ -103,7 +106,123 @@
   }
 }
 
+/* The spectrum footer's dark palettes turn the whole page dark, the way
+   spectrum.aryank.space does — by remapping the colour tokens every utility
+   reads from: black and white swap, and the zinc scale mirrors around its
+   middle (shifted so surfaces sit just above the page and secondary text
+   stays readable). Set by components/Footer.astro, and early in
+   layouts/Layout.astro so a remembered dark palette doesn't flash white. */
+@layer base {
+  :root {
+    --color-page: #fff;
+  }
+
+  :root[data-spectrum="dark"] {
+    color-scheme: dark;
+    --color-page: #1a1a1a;
+    --color-black: #fff;
+    --color-white: #232326;
+    --color-zinc-50: oklch(24% 0.006 286);
+    --color-zinc-100: oklch(27.4% 0.006 286.033);
+    --color-zinc-200: oklch(32% 0.008 286);
+    --color-zinc-300: oklch(40% 0.013 285.805);
+    --color-zinc-400: oklch(55.2% 0.016 285.938);
+    --color-zinc-500: oklch(70.5% 0.015 286.067);
+    --color-zinc-600: oklch(80% 0.01 286);
+    --color-zinc-700: oklch(87.1% 0.006 286.286);
+    --color-zinc-800: oklch(92% 0.004 286.32);
+    --color-zinc-900: oklch(96.7% 0.001 286.375);
+    --color-zinc-950: oklch(98.5% 0 none);
+  }
+
+  body {
+    background-color: var(--color-page);
+  }
+
+  /* Only while a palette switch is under way, so it doesn't fight any
+     element's own transitions the rest of the time. Matches the footer's
+     colour crossfade. */
+  :root[data-spectrum-switching],
+  :root[data-spectrum-switching] *,
+  :root[data-spectrum-switching] *::before,
+  :root[data-spectrum-switching] *::after {
+    transition:
+      color 0.45s,
+      background-color 0.45s,
+      border-color 0.45s,
+      text-decoration-color 0.45s,
+      fill 0.45s,
+      stroke 0.45s;
+  }
+}
+
+/* Film grain: a tile of SVG turbulence over the whole page, nudged around a
+   few times a second so it shimmers like film rather than sitting like a
+   texture. The layer is twice the viewport so the nudges never show an edge,
+   and only its transform animates (compositor only). Still under reduced
+   motion. */
+@layer base {
+  .grain {
+    position: fixed;
+    inset: -50%;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.6 -.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 0.8s steps(1) infinite;
+  }
+
+  :root[data-spectrum="dark"] .grain {
+    opacity: 0.09;
+  }
+
+  @keyframes grain {
+    0% {
+      transform: translate(0, 0);
+    }
+    20% {
+      transform: translate(-3%, 2%);
+    }
+    40% {
+      transform: translate(2%, -4%);
+    }
+    60% {
+      transform: translate(-4%, -1%);
+    }
+    80% {
+      transform: translate(3%, 3%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .grain {
+      animation: none;
+    }
+  }
+}
+
 @utility top-blur {
   -webkit-mask-image: linear-gradient(to bottom, #000 25%, transparent);
   mask-image: linear-gradient(to bottom, #000 25%, transparent);
+}
+
+/* The signature wall (components/guestbook/SignatureWall.tsx): signatures
+   fade in from the middle outward as the wall loads. Only opacity animates,
+   since each one's transform is its place on the wall. */
+@layer base {
+  .wall-item {
+    animation: wall-in 0.5s ease-out both;
+  }
+
+  @keyframes wall-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wall-item {
+      animation: none;
+    }
+  }
 }

@@ -2,6 +2,15 @@
 import "../styles/global.css";
 import { siteConfig } from "../lib/config";
 import TopBlur from "../components/TopBlur.astro";
+import Footer from "../components/Footer.astro";
+import {
+  ACCENTS,
+  DARK_PALETTES,
+  PAGE_COLORS,
+  PALETTES,
+  SCHEDULE,
+  STORAGE_KEY,
+} from "../lib/spectrum";
 
 interface Props {
   title?: string;
@@ -11,6 +20,8 @@ interface Props {
   canonical?: string;
   ogImageUrl?: string;
   isHomePage?: boolean;
+  // The page draws its own full-screen view: no column, blur or footer.
+  fullscreen?: boolean;
   articleData?: { publishedAt: Date; title: string; image?: string };
 }
 
@@ -22,6 +33,7 @@ const {
   canonical = "",
   ogImageUrl = "",
   isHomePage = false,
+  fullscreen = false,
   articleData,
 } = Astro.props;
 
@@ -116,7 +128,40 @@ const ogImage = ogImageUrl || `${siteConfig.url}/images/og-image.png`;
       href="/manifest/apple-touch-icon.png"
     />
     <link rel="manifest" href="/manifest/manifest.json" />
-    <meta name="theme-color" content="#fcfcfc" />
+    <meta name="theme-color" content="#ffffff" />
+    <script
+      is:inline
+      define:vars={{
+        STORAGE_KEY,
+        SCHEDULE,
+        DARK_PALETTES,
+        PAGE_COLORS,
+        ACCENTS,
+        PALETTE_COUNT: PALETTES.length,
+      }}
+    >
+      // The footer's palette (lib/spectrum.ts — initialPalette) sets the page
+      // up before first paint, so a dark palette or a coloured accent doesn't
+      // flash in after the footer's script runs.
+      let palette;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        const n = saved === null ? NaN : Number(saved);
+        if (Number.isInteger(n) && n >= 0 && n < PALETTE_COUNT) palette = n;
+      } catch {}
+      if (palette === undefined) {
+        const hour = new Date().getHours();
+        for (const [from, p] of SCHEDULE) if (hour >= from) palette = p;
+      }
+      const root = document.documentElement;
+      root.style.setProperty("--color-accent", ACCENTS[palette]);
+      if (DARK_PALETTES.includes(palette)) {
+        root.dataset.spectrum = "dark";
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", PAGE_COLORS.dark);
+      }
+    </script>
 
     <script
       type="application/ld+json"
@@ -168,21 +213,35 @@ const ogImage = ogImageUrl || `${siteConfig.url}/images/og-image.png`;
         />
       )
     }
-
   </head>
   <body class="font-sans antialiased">
-    <a
-      href="#main"
-      class="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-3 focus-visible:left-3 focus-visible:z-50 focus-visible:rounded-md focus-visible:bg-white focus-visible:px-3 focus-visible:py-1.5 focus-visible:text-sm focus-visible:text-black focus-visible:ring focus-visible:ring-zinc-300"
-    >
-      Skip to content
-    </a>
+    {
+      fullscreen ? (
+        <main id="main">
+          <slot />
+        </main>
+      ) : (
+        <>
+          <a
+            href="#main"
+            class="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-3 focus-visible:left-3 focus-visible:z-50 focus-visible:rounded-md focus-visible:bg-white focus-visible:px-3 focus-visible:py-1.5 focus-visible:text-sm focus-visible:text-black focus-visible:ring focus-visible:ring-zinc-300"
+          >
+            Skip to content
+          </a>
 
-    <TopBlur />
+          <TopBlur />
 
-    <main id="main" class="mx-auto mb-10 max-w-xl px-4">
-      <slot />
-    </main>
+          <main id="main" class="relative z-20 mx-auto mb-10 max-w-xl px-4">
+            <slot />
+          </main>
+
+          <Footer />
+        </>
+      )
+    }
+
+    <!-- Film grain over everything, so the gradients read as printed. -->
+    <div class="grain" aria-hidden="true"></div>
 
     <script>
       // cuelume's delegated listeners cover [data-cuelume-*] elements anywhere

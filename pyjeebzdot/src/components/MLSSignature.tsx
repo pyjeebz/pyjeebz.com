@@ -4,9 +4,9 @@ import { sound } from "../lib/sound";
 import { SIG_D, SIG_VB } from "../lib/signature";
 
 // The "mls" signature (Mujeeb Lawal-Saka) as one continuous stroke, drawn on
-// like handwriting — pathLength traces the stroke, then the ink fills in
-// behind it. Replays on hover. Reduced motion skips straight to the finished
-// filled signature. The path lives in src/lib/signature.ts (shared with the
+// like handwriting — pathLength traces the stroke in the footer palette's
+// accent (wet ink), then the black ink fills in over it as it dries. Replays
+// on hover. Reduced motion skips straight to the finished filled signature. The path lives in src/lib/signature.ts (shared with the
 // favicon/OG asset scripts).
 //
 // `crossedOut` (404 page): after the signature finishes, a hand scribble
@@ -51,18 +51,45 @@ export function MLSSignature({ crossedOut = false }: { crossedOut?: boolean }) {
       key={runId}
       viewBox={SIG_VB}
       xmlns="http://www.w3.org/2000/svg"
-      style={{ width: "64px", height: "auto", overflow: "visible", display: "block" }}
+      style={{
+        width: "64px",
+        height: "auto",
+        overflow: "visible",
+        display: "block",
+      }}
       role="img"
       aria-label="Signature: mls"
       onHoverStart={replay}
-      animate={reduce || !crossedOut ? undefined : { rotate: [0, 0, -1.5, 1, -0.3, 0] }}
-      transition={reduce || !crossedOut ? undefined : {
-        duration: 0.5,
-        delay: 1.2,
-        times: [0, 0.05, 0.4, 0.7, 0.9, 1],
-        ease: "easeOut",
-      }}
+      animate={
+        reduce || !crossedOut ? undefined : { rotate: [0, 0, -1.5, 1, -0.3, 0] }
+      }
+      transition={
+        reduce || !crossedOut
+          ? undefined
+          : {
+              duration: 0.5,
+              delay: 1.2,
+              times: [0, 0.05, 0.4, 0.7, 0.9, 1],
+              ease: "easeOut",
+            }
+      }
     >
+      {/* Wet ink: the pen traces the stroke in the footer palette's accent… */}
+      {reduce ? null : (
+        <motion.path
+          d={SIG_D}
+          fill="none"
+          stroke="var(--color-accent)"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          pathLength={1}
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ pathLength: { duration: 0.9, ease: [0.4, 0, 0.2, 1] } }}
+        />
+      )}
+      {/* …and it dries to black as the ink fills in over it. */}
       <motion.path
         d={SIG_D}
         fill="var(--color-black)"
@@ -70,18 +97,14 @@ export function MLSSignature({ crossedOut = false }: { crossedOut?: boolean }) {
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
-        pathLength={1}
-        initial={reduce ? false : { pathLength: 0, fillOpacity: 0 }}
-        animate={{ pathLength: 1, fillOpacity: 1 }}
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={
           reduce
             ? { duration: 0 }
-            : {
-                // Compressed from the original 2s trace so one arrival swell
-                // can span the whole signature.
-                pathLength: { duration: 0.9, ease: [0.4, 0, 0.2, 1] },
-                fillOpacity: { duration: 0.4, ease: "easeIn", delay: 0.7 },
-              }
+            : // Compressed from the original 2s trace so one arrival swell
+              // can span the whole signature.
+              { opacity: { duration: 0.5, ease: "easeIn", delay: 0.75 } }
         }
       />
       {crossedOut ? (
@@ -95,9 +118,13 @@ export function MLSSignature({ crossedOut = false }: { crossedOut?: boolean }) {
           pathLength={1}
           initial={reduce ? false : { pathLength: 0 }}
           animate={{ pathLength: 1 }}
-          transition={reduce ? { duration: 0 } : {
-            pathLength: { delay: 1.2, duration: 0.45, ease: "easeInOut" },
-          }}
+          transition={
+            reduce
+              ? { duration: 0 }
+              : {
+                  pathLength: { delay: 1.2, duration: 0.45, ease: "easeInOut" },
+                }
+          }
         />
       ) : null}
     </motion.svg>

@@ -1,0 +1,546 @@
+---
+// Footer — the rising spectrum from spectrum.aryank.space.
+//
+// Nine columns stepped like a pyramid, each filled with the same vertical
+// spectrum (ember → blue → steel → ice → yellow → red → magenta → a pink that
+// fades out) stretched over its own height. Short columns squeeze the bands
+// and tall ones spread them, so the bands bow into an arch; a gaussian blur
+// melts the steps together.
+//
+// The footer is the page's last viewport of scroll. Across it, the spectrum —
+// pinned to the bottom of the screen — grows up out of the bottom edge: from
+// a 5% sliver pushed a full screen down, to full height, easing out
+// (power2.out) and done ~40% of the way in. Like their GSAP scrub: 1, the
+// drawn progress chases the scroll position over about a second instead of
+// snapping to it.
+//
+// Their colour picker lives in the footer itself: click (or Enter/Space on)
+// the footer to step to the next of their nine palettes, with the same quick
+// 1.02 scale pulse. The colours crossfade rather than snap, and the choice is
+// remembered per visitor. Until a visitor picks one, the time of day does
+// (lib/spectrum.ts).
+//
+// The columns are also an instrument: sweep across them and each one rings a
+// pentatonic note in the palette's voice and lifts like a pressed key.
+//
+// Without JS, or with reduced motion, the spectrum is simply there (and the
+// palette still changes on click, just without the crossfade and pulse).
+
+// Bottom of the column first, at their stop offsets; the last stop fades out.
+const SPECTRUM: [number, string, number?][] = [
+  [0, "#340B05"],
+  [0.183, "#0358F7"],
+  [0.284, "#5092C7"],
+  [0.413, "#E1ECFE"],
+  [0.587, "#FFD400"],
+  [0.683, "#FA3D1D"],
+  [0.803, "#FD02F5"],
+  [1, "#FFC0FD", 0],
+];
+
+// Their columns in the 1567×584 artboard: left edge, width, top (the base is
+// the artboard's bottom). The centre is tallest; the edges are shortest.
+const COLUMNS = [
+  [0, 174, 295],
+  [174, 174, 184],
+  [348, 174, 104],
+  [522, 175, 54],
+  [697, 173, 0],
+  [870, 175, 54],
+  [1045, 174, 104],
+  [1219, 174, 184],
+  [1393, 174, 294],
+];
+---
+
+<!--
+  Their background glow: three big blurred radial washes of the current
+  palette, fixed behind the whole page at 15% — top left, right, and bottom.
+  Repainted with the spectrum, so they crossfade with it on a palette change.
+-->
+<div
+  class="pointer-events-none fixed inset-0 -z-10 overflow-hidden opacity-15"
+  aria-hidden="true"
+  data-spectrum-glow
+>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
+</div>
+
+<footer class="relative h-screen cursor-pointer" data-footer>
+  <div class="pointer-events-none fixed inset-x-0 bottom-0 z-10 h-screen">
+    <div
+      class="absolute inset-0 origin-bottom will-change-transform"
+      data-footer-spectrum
+    >
+      <svg
+        viewBox="0 0 1567 584"
+        preserveAspectRatio="none"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        class="size-full origin-bottom"
+        aria-hidden="true"
+      >
+        <g clip-path="url(#footer-clip)" filter="url(#footer-blur)">
+          {
+            COLUMNS.map(([x, w, top], i) => (
+              <rect
+                x={x}
+                y={top}
+                width={w}
+                height={584 - top}
+                fill={`url(#footer-grad-${i})`}
+              />
+            ))
+          }
+        </g>
+        <defs>
+          <filter
+            id="footer-blur"
+            x="-30"
+            y="-30"
+            width="1627"
+            height="644"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB"
+          >
+            <feGaussianBlur stdDeviation="15"></feGaussianBlur>
+          </filter>
+          {
+            COLUMNS.map(([x, w, top], i) => (
+              <linearGradient
+                id={`footer-grad-${i}`}
+                x1={x + w / 2}
+                y1="584"
+                x2={x + w / 2}
+                y2={top}
+                gradientUnits="userSpaceOnUse"
+              >
+                {SPECTRUM.map(([offset, color, opacity]) => (
+                  <stop
+                    offset={offset}
+                    stop-color={color}
+                    stop-opacity={opacity}
+                  />
+                ))}
+              </linearGradient>
+            ))
+          }
+          <clipPath id="footer-clip">
+            <rect width="1567" height="584"></rect>
+          </clipPath>
+        </defs>
+      </svg>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Their sizes and placements; the defaults are the original palette, so
+     the glow is right before the script repaints it. */
+  [data-spectrum-glow] {
+    --glow-1: #340b05;
+    --glow-2: #0358f7;
+    --glow-3: #ffd400;
+    --glow-4: #fa3d1d;
+    --glow-5: #fd02f5;
+    --glow-6: #5092c7;
+  }
+
+  .glow {
+    position: absolute;
+    filter: blur(40px);
+  }
+
+  .glow-1 {
+    top: -20%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(
+      circle,
+      var(--glow-1) 0%,
+      var(--glow-2) 35%,
+      transparent 70%
+    );
+  }
+
+  .glow-2 {
+    top: 30%;
+    right: -15%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(
+      circle,
+      var(--glow-3) 0%,
+      var(--glow-4) 40%,
+      transparent 70%
+    );
+  }
+
+  .glow-3 {
+    bottom: -25%;
+    left: 20%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(
+      circle,
+      var(--glow-5) 0%,
+      var(--glow-6) 45%,
+      transparent 75%
+    );
+  }
+</style>
+
+<script>
+  import { sound } from "../lib/sound";
+  import {
+    ACCENTS,
+    DARK_PALETTES,
+    PAGE_COLORS,
+    PALETTES,
+    STORAGE_KEY,
+    VOICES,
+    initialPalette,
+  } from "../lib/spectrum";
+
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  const footer = document.querySelector<HTMLElement>("[data-footer]");
+  const spectrum = document.querySelector<HTMLElement>(
+    "[data-footer-spectrum]",
+  );
+  const svg = spectrum?.querySelector("svg");
+
+  if (footer && spectrum && svg) {
+    const root = document.documentElement;
+    const FADE_MS = 450;
+
+    // ── The palette ──────────────────────────────────────────────────────
+
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    let switching: number | undefined;
+    const setPage = (dark: boolean, animate: boolean) => {
+      if ((root.dataset.spectrum === "dark") === dark) return;
+      if (animate) {
+        root.dataset.spectrumSwitching = "";
+        clearTimeout(switching);
+        switching = window.setTimeout(
+          () => delete root.dataset.spectrumSwitching,
+          FADE_MS + 50,
+        );
+      }
+      if (dark) root.dataset.spectrum = "dark";
+      else delete root.dataset.spectrum;
+      themeColor?.setAttribute(
+        "content",
+        dark ? PAGE_COLORS.dark : PAGE_COLORS.light,
+      );
+    };
+
+    // Every gradient's stops, grouped by stop index — stop i of each of the
+    // nine columns takes palette colour i.
+    const gradients = [...svg.querySelectorAll("linearGradient")];
+    const stops = PALETTES[0].map((_, i) =>
+      gradients.map((g) => g.querySelectorAll("stop")[i]),
+    );
+
+    const toRgb = (hex: string) => {
+      const n = Number.parseInt(hex.slice(1), 16);
+      return [n >> 16, (n >> 8) & 255, n & 255];
+    };
+    const mix = (a: number[], b: number[], t: number) =>
+      a.map((v, i) => v + (b[i] - v) * t);
+
+    // A palette's colours as painted: its eight stops, then its accent.
+    const colorsOf = (p: number) => [...PALETTES[p], ACCENTS[p]].map(toRgb);
+
+    let index = 0;
+    let shown = colorsOf(0); // what's on screen, mid-fade included
+    let fade: number | undefined;
+
+    // The page glow reads palette colours through --glow-1…6, in their
+    // mapping: 1–2 top left, 3–4 right, 5–6 bottom.
+    const glow = document.querySelector<HTMLElement>("[data-spectrum-glow]");
+    const GLOW_STOPS = [0, 1, 4, 5, 6, 2];
+
+    const paint = (colors: number[][]) => {
+      const css = colors.map((c) => `rgb(${c.map(Math.round).join(",")})`);
+      stops.forEach((at, i) =>
+        at.forEach((stop) => stop.setAttribute("stop-color", css[i])),
+      );
+      GLOW_STOPS.forEach((stop, i) =>
+        glow?.style.setProperty(`--glow-${i + 1}`, css[stop]),
+      );
+      root.style.setProperty("--color-accent", css[8]);
+    };
+
+    // Crossfade the spectrum, glow and accent to palette p.
+    const show = (p: number, fadeMs: number) => {
+      const from = shown;
+      const to = colorsOf(p);
+      if (fade !== undefined) cancelAnimationFrame(fade);
+      if (fadeMs <= 0) {
+        paint((shown = to));
+        return;
+      }
+      const start = performance.now();
+      const step = (now: number) => {
+        const t = Math.min(1, (now - start) / fadeMs);
+        const eased = 1 - (1 - t) ** 2;
+        paint((shown = from.map((c, i) => mix(c, to[i], eased))));
+        fade = t < 1 ? requestAnimationFrame(step) : undefined;
+      };
+      fade = requestAnimationFrame(step);
+    };
+
+    // Make p the palette — the page follows it into or out of dark.
+    const apply = (p: number, animate: boolean) => {
+      index = p;
+      setPage(DARK_PALETTES.includes(p), animate);
+      show(p, animate ? FADE_MS : 0);
+    };
+
+    // Their swatch click: a quick 1.02 swell from the bottom and back.
+    const pulse = () =>
+      svg.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(1.02)" },
+          { transform: "scale(1)" },
+        ],
+        { duration: 400, easing: "ease-in-out" },
+      );
+
+    let dancing = false;
+    const next = () => {
+      if (dancing) return;
+      apply((index + 1) % PALETTES.length, !reduceMotion);
+      sound.paletteSwap();
+      try {
+        localStorage.setItem(STORAGE_KEY, String(index));
+      } catch {}
+      if (!reduceMotion) pulse();
+    };
+
+    // The visitor's pick, or the time of day's (as the head script did).
+    apply(initialPalette(), false);
+
+    footer.setAttribute("role", "button");
+    footer.setAttribute("tabindex", "0");
+    footer.setAttribute("aria-label", "Change the footer’s colours");
+    footer.addEventListener("click", next);
+    footer.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      next();
+    });
+
+    // ── The rise ─────────────────────────────────────────────────────────
+    //
+    // Their scrub, eased: the spectrum grows out of the bottom edge across
+    // the first 40% of the footer's scroll, the drawn progress chasing the
+    // scroll position over about a second.
+
+    const RISE_END = 0.4;
+    const CATCH_UP = 4; // per second
+    let riseTarget = 0;
+    let rise = 0;
+    let risen = 1; // eased, 0–1 — the playable columns need the spectrum up
+
+    const renderRise = () => {
+      const t = Math.min(1, rise / RISE_END);
+      risen = 1 - (1 - t) ** 2; // power2.out
+      spectrum.style.transform = `scaleY(${0.05 + 0.95 * risen}) translateY(${(1 - risen) * 100}vh)`;
+      spectrum.style.opacity = String(risen);
+      // Nothing to see — keep the blur filter from costing anything.
+      spectrum.style.visibility = risen < 0.001 ? "hidden" : "visible";
+    };
+
+    // 0 when the footer's top meets the bottom of the screen, 1 at the end
+    // of the page. On a short page the footer is already in view at the top,
+    // so the rise starts from wherever scrolling can start instead.
+    const progress = () => {
+      const footerTop = footer.getBoundingClientRect().top + window.scrollY;
+      const start = Math.max(0, footerTop - window.innerHeight);
+      const end = document.documentElement.scrollHeight - window.innerHeight;
+      if (end <= start) return 1;
+      return Math.min(1, Math.max(0, (window.scrollY - start) / (end - start)));
+    };
+
+    // ── The playable columns ─────────────────────────────────────────────
+    //
+    // Sweep the pointer across the spectrum and each column it enters rings
+    // its note (in the palette's voice) and lifts, like a key being pressed;
+    // the neighbours ripple a little. A lift grows the column's rect upward,
+    // and its gradient with it, so the bands stretch rather than slide.
+
+    const LIFT = 34; // artboard units at full lift (of 584)
+    const rects = [...svg.querySelectorAll<SVGRectElement>("g rect")];
+    const tops = rects.map((r) => Number(r.getAttribute("y")));
+    const bounds = rects.map((r) => {
+      const x = Number(r.getAttribute("x"));
+      return [x / 1567, (x + Number(r.getAttribute("width"))) / 1567];
+    });
+    const lift = rects.map(() => 0);
+    const liftTarget = rects.map(() => 0);
+
+    const renderLifts = () => {
+      rects.forEach((rect, i) => {
+        const top = tops[i] - lift[i] * LIFT;
+        rect.setAttribute("y", String(top));
+        rect.setAttribute("height", String(584 - top));
+        gradients[i].setAttribute("y2", String(top));
+      });
+    };
+
+    let hovered = -1;
+    const press = (i: number, voice = VOICES[index]) => {
+      liftTarget.fill(0);
+      liftTarget[i] = 1;
+      if (i > 0) liftTarget[i - 1] = 0.3;
+      if (i < rects.length - 1) liftTarget[i + 1] = 0.3;
+      sound.note(i, voice);
+      wake();
+    };
+    const release = () => {
+      hovered = -1;
+      liftTarget.fill(0);
+      wake();
+    };
+
+    // Which column is under the pointer, if it's on the coloured part.
+    const columnAt = (x: number, y: number) => {
+      if (risen < 0.6) return -1;
+      const box = spectrum.getBoundingClientRect();
+      const fx = (x - box.left) / box.width;
+      const i = bounds.findIndex(([a, b]) => fx >= a && fx < b);
+      if (i < 0) return -1;
+      const columnTop = box.top + (box.height * tops[i]) / 584;
+      return y >= columnTop ? i : -1;
+    };
+
+    footer.addEventListener("pointermove", (event) => {
+      const i = columnAt(event.clientX, event.clientY);
+      if (i === hovered) return;
+      if (i < 0) return release();
+      hovered = i;
+      press(i);
+    });
+    footer.addEventListener("pointerleave", release);
+    // A tap on a touch screen has no hover before it, so ring on the way down.
+    footer.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse") return;
+      const i = columnAt(event.clientX, event.clientY);
+      if (i < 0) return;
+      press(i);
+      window.setTimeout(release, 250);
+    });
+
+    // ── One loop for the rise and the lifts ─────────────────────────────
+
+    let raf: number | undefined;
+    let last = 0;
+    const tick = (now: number) => {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      let busy = false;
+
+      if (rise !== riseTarget) {
+        rise += (riseTarget - rise) * (1 - Math.exp(-CATCH_UP * dt));
+        if (Math.abs(riseTarget - rise) < 0.0005) rise = riseTarget;
+        renderRise();
+        busy ||= rise !== riseTarget;
+      }
+
+      lift.forEach((v, i) => {
+        // Up quickly, settle back slowly.
+        const rate = liftTarget[i] > v ? 14 : 5;
+        lift[i] = v + (liftTarget[i] - v) * (1 - Math.exp(-rate * dt));
+        if (Math.abs(liftTarget[i] - lift[i]) < 0.002) lift[i] = liftTarget[i];
+        else busy = true;
+      });
+      renderLifts();
+
+      raf = busy ? requestAnimationFrame(tick) : undefined;
+    };
+    // Reduced motion: notes still ring, but nothing lifts or rises.
+    function wake() {
+      if (reduceMotion || raf !== undefined) return;
+      last = performance.now();
+      raf = requestAnimationFrame(tick);
+    }
+
+    if (!reduceMotion) {
+      const onScroll = () => {
+        riseTarget = progress();
+        wake();
+      };
+      // Start wherever the page loads (e.g. a refresh at the bottom), unanimated.
+      riseTarget = rise = progress();
+      renderRise();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+    }
+
+    // ── The secret ───────────────────────────────────────────────────────
+    //
+    // Type "jeebz" anywhere (not "mujeeb": M is the sound toggle): the page
+    // glides down to the footer and the spectrum dances, a wave of lifted
+    // columns running up the scale and back down, flicking through every
+    // palette on the way before landing back on the visitor's own. The page
+    // itself stays put (no dark flashes); only the spectrum, glow and accent
+    // change.
+
+    const SECRET = "jeebz";
+    const BEAT_MS = 150;
+    let typed = "";
+
+    const wait = (ms: number) =>
+      new Promise((resolve) => window.setTimeout(resolve, ms));
+
+    const dance = async () => {
+      if (dancing) return;
+      dancing = true;
+      const home = index;
+
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+      if (!reduceMotion) await wait(900);
+
+      const wave = [0, 1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+      for (const [beat, column] of wave.entries()) {
+        const palette = (home + 1 + beat) % PALETTES.length;
+        if (!reduceMotion) show(palette, BEAT_MS);
+        press(column, VOICES[palette]);
+        await wait(BEAT_MS);
+      }
+      release();
+      show(home, reduceMotion ? 0 : FADE_MS);
+      if (!reduceMotion) pulse();
+      dancing = false;
+    };
+
+    window.addEventListener("keydown", (event) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key.length !== 1) return;
+      const el = event.target;
+      if (
+        el instanceof HTMLElement &&
+        (el.isContentEditable ||
+          ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))
+      ) {
+        return;
+      }
+      typed = (typed + event.key.toLowerCase()).slice(-SECRET.length);
+      if (typed !== SECRET) return;
+      typed = "";
+      dance();
+    });
+  }
+</script>

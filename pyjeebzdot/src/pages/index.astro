@@ -1,15 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { MLSSignature } from "../components/MLSSignature";
-import { WorkSection } from "../components/work/WorkSection";
 import { MoreInline } from "../components/MoreInline";
 import { SoundToggle } from "../components/SoundToggle";
 ---
 
 <Layout isHomePage={true}>
   <header class="mb-5">
-    <MLSSignature client:load />
-    <h1 class="mt-3 mb-0.5">Hey, I’m Mujeeb.</h1>
+    <h1 class="mb-0.5">Hey, I’m Mujeeb.</h1>
     <p class="text-zinc-500">You can call me “Jeebz”</p>
   </header>
 
@@ -30,8 +27,6 @@ import { SoundToggle } from "../components/SoundToggle";
     </p>
   </div>
 
-  <WorkSection client:load />
-
   <div class="mt-8 space-y-3">
     <p class="text-zinc-600">
       Read my <a
@@ -39,12 +34,17 @@ import { SoundToggle } from "../components/SoundToggle";
         data-cuelume-toggle="page"
         class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
         >writings</a
-      >, or browse the <a
+      >, browse the <a
         href="/projects"
         data-cuelume-toggle="page"
         class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
         >projects</a
-      > I’ve built. Wanna discuss a project or just say hi? <a
+      > I’ve built, or sign my <a
+        href="/guestbook"
+        data-cuelume-toggle="page"
+        class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+        >guestbook</a
+      >. Wanna discuss a project or just say hi? <a
         target="_blank"
         rel="noopener noreferrer"
         href="https://cal.com/pyjeebz"
