@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type PointerEvent,
+  type SetStateAction,
+} from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { sound } from "../../lib/sound";
 import {
@@ -46,10 +53,25 @@ const formatTime = (iso: string) =>
   });
 
 export function Guestbook() {
+  const reduce = useReducedMotion();
   const [signatures, setSignatures] = useState<Signature[]>([]);
   const [next, setNext] = useState<number | null>(null);
   const [wall, setWall] = useState<"loading" | "ready" | "offline">("loading");
   const [loadingMore, setLoadingMore] = useState(false);
+  const [session, setSession] = useState<Session | "loading">("loading");
+  // The pad stays mounted while it's tucked away, so a half-drawn signature
+  // survives closing it.
+  const [open, setOpen] = useState(false);
+
+  const user = session === "loading" ? null : session.user;
+  const signedAt = session === "loading" ? null : session.signedAt;
+
+  useEffect(() => {
+    fetch("/api/auth/session")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((body: Session) => setSession(body))
+      .catch(() => setSession({ enabled: false, user: null, signedAt: null }));
+  }, []);
 
   const load = async (before?: number) => {
     const res = await fetch(
@@ -88,30 +110,66 @@ export function Guestbook() {
 
   return (
     <>
-      <SigningPad
-        onSigned={(signature) => {
-          // Signing again replaces their old signature, so take its card down.
-          setSignatures((all) => [
-            signature,
-            ...all.filter((s) => s.id !== signature.id),
-          ]);
-          setWall("ready");
-        }}
-      />
+      <div className="flex flex-wrap gap-2 text-sm">
+        <motion.button
+          type="button"
+          onClick={() => {
+            setOpen((o) => !o);
+            sound.nav();
+          }}
+          aria-expanded={open}
+          aria-controls="signing-pad"
+          whileTap={reduce ? undefined : { scale: 0.96 }}
+          className="inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 text-white"
+        >
+          <PenIcon />
+          {open
+            ? "Close the pad"
+            : user && signedAt
+              ? "Update your signature"
+              : "Sign the guestbook"}
+        </motion.button>
+        <a
+          href="/guestbook/wall"
+          onClick={() => sound.nav()}
+          className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2 text-zinc-700 transition-colors hover:border-zinc-400 hover:text-black"
+        >
+          <WallIcon />
+          See the signature wall
+        </a>
+      </div>
 
-      <section className="mt-12" aria-labelledby="wall-heading">
-        <div className="mb-4 flex items-baseline justify-between gap-4">
-          <h2 id="wall-heading" className="text-zinc-500">
-            Signed by
-          </h2>
-          <a
-            href="/guestbook/wall"
-            onClick={() => sound.nav()}
-            className="text-sm text-zinc-500 underline decoration-zinc-300 underline-offset-2 transition-colors hover:text-black hover:no-underline"
-          >
-            See the signature wall
-          </a>
+      <motion.div
+        id="signing-pad"
+        initial={false}
+        animate={
+          open ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }
+        }
+        transition={reduce ? { duration: 0 } : { duration: 0.3, ease: "easeOut" }}
+        inert={!open}
+        className="overflow-hidden"
+      >
+        <div className="pt-6">
+          <SigningPad
+            session={session}
+            setSession={setSession}
+            onWake={() => setOpen(true)}
+            onSigned={(signature) => {
+              // Signing again replaces their old signature, so take its card down.
+              setSignatures((all) => [
+                signature,
+                ...all.filter((s) => s.id !== signature.id),
+              ]);
+              setWall("ready");
+            }}
+          />
         </div>
+      </motion.div>
+
+      <section className="mt-10" aria-labelledby="wall-heading">
+        <h2 id="wall-heading" className="mb-4 text-zinc-500">
+          Signed by
+        </h2>
 
         {wall === "loading" ? (
           <p className="text-sm text-zinc-400">Gathering signatures…</p>
@@ -126,15 +184,20 @@ export function Guestbook() {
             {signatures.map((s) => (
               <li
                 key={s.id}
-                className="flex flex-col justify-between gap-4 rounded-xl border border-zinc-200 bg-white p-4"
+                className="flex min-h-36 flex-col gap-5 rounded-xl border border-zinc-200 bg-white p-5"
               >
                 {s.message ? (
-                  <p className="text-sm break-words text-zinc-700">
+                  <p className="line-clamp-4 break-words text-zinc-800">
                     {s.message}
                   </p>
                 ) : null}
                 <div className="mt-auto flex items-end justify-between gap-3">
                   <p className="min-w-0 text-sm">
+                    {user && s.login === user.login ? (
+                      <span className="mb-1 inline-block rounded-full bg-zinc-100 px-2 text-xs text-zinc-500">
+                        You
+                      </span>
+                    ) : null}
                     {s.login ? (
                       <a
                         href={`https://github.com/${s.login}`}
@@ -161,7 +224,7 @@ export function Guestbook() {
                     strokes={s.strokes}
                     label={`Signature by ${s.name || "an anonymous visitor"}`}
                     crop
-                    className="block h-14 w-28 shrink-0"
+                    className="block h-16 w-32 shrink-0"
                   />
                 </div>
               </li>
@@ -194,14 +257,20 @@ type Session = {
 // still there when they get back.
 const DRAFT_KEY = "pyjeebz:guestbook-draft";
 
-type SigningPadProps = { onSigned: (signature: Signature) => void };
+type SigningPadProps = {
+  session: Session | "loading";
+  setSession: Dispatch<SetStateAction<Session | "loading">>;
+  // The pad has something to show (a draft back from GitHub, or a sign-in
+  // that went wrong), so open it.
+  onWake: () => void;
+  onSigned: (signature: Signature) => void;
+};
 
 function SigningPad(props: SigningPadProps) {
-  const { onSigned } = props;
+  const { session, setSession, onWake, onSigned } = props;
   const reduce = useReducedMotion();
   const svgRef = useRef<SVGSVGElement>(null);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
-  const [session, setSession] = useState<Session | "loading">("loading");
   const [message, setMessage] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState<Status>({ kind: "idle" });
@@ -228,6 +297,7 @@ function SigningPad(props: SigningPadProps) {
         };
         setStrokes(saved.strokes);
         setMessage(saved.message);
+        onWake();
       }
     } catch {
       // No storage, or a draft that didn't parse: start blank.
@@ -241,12 +311,8 @@ function SigningPad(props: SigningPadProps) {
       });
       url.searchParams.delete("signin");
       history.replaceState(null, "", url);
+      onWake();
     }
-
-    fetch("/api/auth/session")
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((body: Session) => setSession(body))
-      .catch(() => setSession({ enabled: false, user: null, signedAt: null }));
   }, []);
 
   const signIn = () => {
@@ -490,6 +556,43 @@ function SigningPad(props: SigningPadProps) {
                 : ""}
       </p>
     </form>
+  );
+}
+
+function PenIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M11 2.5l2.5 2.5L6 12.5 2.5 13.5l1-3.5z" />
+    </svg>
+  );
+}
+
+// A little scrawl, for the wall of them.
+function WallIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M1.5 11c1.5-6 3-7 3.5-4.5S4 12 5.5 10s2-3 2.5-1 1.5 2 2.5.5 1.5-1 2 0 1.5.5 2-.5" />
+    </svg>
   );
 }
 
