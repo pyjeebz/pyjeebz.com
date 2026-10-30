@@ -439,12 +439,12 @@ function SigningPad(props: SigningPadProps) {
           aria-hidden="true"
           className="hidden"
         />
-        <div className="flex items-center gap-3 text-sm">
+        <div className="flex items-center gap-1.5 text-sm">
           <button
             type="button"
             onClick={() => setStrokes((all) => all.slice(0, -1))}
             disabled={strokes.length === 0}
-            className="text-zinc-500 transition-colors hover:text-black disabled:opacity-40 disabled:hover:text-zinc-500"
+            className="-my-3 -ml-1.5 px-1.5 py-3 text-zinc-500 transition-colors hover:text-black disabled:opacity-40 disabled:hover:text-zinc-500"
           >
             Undo
           </button>
@@ -452,7 +452,7 @@ function SigningPad(props: SigningPadProps) {
             type="button"
             onClick={() => setStrokes([])}
             disabled={strokes.length === 0}
-            className="text-zinc-500 transition-colors hover:text-black disabled:opacity-40 disabled:hover:text-zinc-500"
+            className="-my-3 px-1.5 py-3 text-zinc-500 transition-colors hover:text-black disabled:opacity-40 disabled:hover:text-zinc-500"
           >
             Clear
           </button>
@@ -461,7 +461,7 @@ function SigningPad(props: SigningPadProps) {
               type="submit"
               disabled={!canSign}
               whileTap={reduce || !canSign ? undefined : { scale: 0.96 }}
-              className="rounded-full bg-black px-3.5 py-1 text-white transition-opacity disabled:opacity-30"
+              className="rounded-full bg-black px-4 py-2 text-white transition-opacity disabled:opacity-30"
             >
               {status.kind === "sending" ? "Signing…" : "Sign"}
             </motion.button>
@@ -469,7 +469,7 @@ function SigningPad(props: SigningPadProps) {
             <motion.button
               type="submit"
               whileTap={reduce ? undefined : { scale: 0.96 }}
-              className="inline-flex items-center gap-1.5 rounded-full bg-black px-3.5 py-1 text-white"
+              className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-white"
             >
               <GitHubIcon />
               Sign in with GitHub
