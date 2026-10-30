@@ -37,3 +37,7 @@ bun.lock
 # claude code session data
 .claude/
 .agent/
+
+# local scratch: screenshots and the pre-rewrite git backup
+/image.png
+*.bundle
