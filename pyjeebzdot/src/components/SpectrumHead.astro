@@ -1,0 +1,46 @@
+---
+// The footer's palette (lib/spectrum.ts — initialPalette), applied in the
+// head before first paint so a dark palette or a coloured accent doesn't
+// flash in after the footer's script runs. Rendered on every page by
+// layouts/Layout.astro, so the palette picked on the home page themes the
+// whole site.
+import {
+  ACCENTS,
+  DARK_PALETTES,
+  PAGE_COLORS,
+  PALETTES,
+  SCHEDULE,
+  STORAGE_KEY,
+} from "../lib/spectrum";
+---
+
+<script
+  is:inline
+  define:vars={{
+    STORAGE_KEY,
+    SCHEDULE,
+    DARK_PALETTES,
+    PAGE_COLORS,
+    ACCENTS,
+    PALETTE_COUNT: PALETTES.length,
+  }}
+>
+  let palette;
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const n = saved === null ? NaN : Number(saved);
+    if (Number.isInteger(n) && n >= 0 && n < PALETTE_COUNT) palette = n;
+  } catch {}
+  if (palette === undefined) {
+    const hour = new Date().getHours();
+    for (const [from, p] of SCHEDULE) if (hour >= from) palette = p;
+  }
+  const root = document.documentElement;
+  root.style.setProperty("--color-accent", ACCENTS[palette]);
+  if (DARK_PALETTES.includes(palette)) {
+    root.dataset.spectrum = "dark";
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", PAGE_COLORS.dark);
+  }
+</script>

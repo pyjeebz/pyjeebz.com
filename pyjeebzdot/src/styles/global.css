@@ -79,6 +79,12 @@
     scrollbar-gutter: stable;
   }
 
+  /* The home page fits the screen and its spectrum runs edge to edge, so an
+     empty reserved gutter would show as a blank strip down its right side. */
+  html:has([data-footer]) {
+    scrollbar-gutter: auto;
+  }
+
   body {
     @apply selection:bg-selection;
     font-weight: 430;
@@ -153,6 +159,21 @@
       text-decoration-color 0.45s,
       fill 0.45s,
       stroke 0.45s;
+  }
+}
+
+/* Page to page, the browser crossfades instead of cutting, so moving between
+   the home page's spectrum and the plainer pages is a dissolve, not a jump.
+   Browsers without cross-document view transitions just navigate. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.22s;
+    animation-timing-function: ease-out;
   }
 }
 
