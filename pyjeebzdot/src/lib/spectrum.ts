@@ -2,7 +2,8 @@
 // ones turn the page dark, the accent each one lends the rest of the site, the
 // voice the playable columns take on, and which palette a first visit gets at
 // each time of day. Shared by components/Footer.astro and the early,
-// pre-paint script in layouts/Layout.astro.
+// pre-paint script in components/SpectrumHead.astro. Only the home page has
+// the spectrum, but the palette picked there themes every page.
 
 // spectrum.aryank.space's nine palettes, in their swatch order, bottom of the
 // column first.
@@ -106,6 +107,19 @@ export const PALETTES = [
     "#0C0A09",
     "#000000",
   ],
+];
+
+// What the footer's caption calls each palette, in the same order.
+export const PALETTE_NAMES = [
+  "Original",
+  "Blue → pink",
+  "Blue → orange",
+  "Amber sunset",
+  "Purple",
+  "Monochrome",
+  "Pink",
+  "Blue-black",
+  "Beige-black",
 ];
 
 // The colour each palette lends the page — text selection, the wet ink of the
