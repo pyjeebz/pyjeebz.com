@@ -1,59 +1,84 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { BackButton } from "../components/BackButton";
-import ProjectList from "../components/ProjectList.astro";
+import ProjectList, { type Project } from "../components/ProjectList.astro";
 
-const projects = [
-  {
-    name: "PreScale",
-    tagline: "The load tester that tells you why",
-    href: "https://prescale.dev/",
-  },
+// In order along the way from a laptop to production; Toss, which isn't on
+// that way, branches off the end (components/ProjectList.astro).
+const projects: Project[] = [
   {
     name: "ports",
-    tagline: "Know what’s on your ports. Free or kill by name",
+    tagline: "Every dev server on your machine, by name",
     href: "https://ports.tools/",
-  },
-  {
-    name: "Toss",
-    tagline: "Toss text between paired devices",
-    href: "https://toss.pyjeebz.com/",
+    stage: "On your machine",
+    kind: "CLI",
+    year: 2026,
   },
   {
     name: "why",
     tagline: "git blame tells you who. why tells you why",
     href: "https://github.com/pyjeebz/why",
-  },
-  {
-    name: "predict",
-    tagline: "ML-powered auto-scaling for e-commerce",
-    href: "https://github.com/pyjeebz/predict",
+    stage: "In the history",
+    kind: "CLI",
+    year: 2026,
   },
   {
     name: "breakwatch",
     tagline: "OpenAPI breaking-change detector",
     href: "https://github.com/pyjeebz/breakwatch",
+    stage: "In review",
+    kind: "Action",
+    year: 2026,
+  },
+  {
+    name: "PreScale",
+    tagline: "Capacity checks that run themselves",
+    href: "https://prescale.dev/",
+    stage: "Before deploy",
+    kind: "CLI",
+    year: 2025,
   },
   {
     name: "statewatch",
     tagline: "GCP drift detection with blast radius",
     href: "https://github.com/pyjeebz/statewatch",
+    stage: "In the cloud",
+    kind: "Action",
+    year: 2026,
+  },
+  {
+    name: "predict",
+    tagline: "ML-powered auto-scaling for e-commerce",
+    href: "https://github.com/pyjeebz/predict",
+    stage: "At peak traffic",
+    kind: "ML",
+    year: 2025,
   },
 ];
+
+const branch: Project = {
+  name: "Toss",
+  tagline: "Paste on one device, it appears on the others",
+  href: "https://toss.pyjeebz.com/",
+  stage: "Between your devices",
+  kind: "Web",
+  year: 2026,
+};
 ---
 
 <Layout
   title="Projects | Mujeeb"
   description="Mujeeb’s projects and experiments."
+  fonts={["/fonts/newsreader.woff2"]}
 >
-  <header class="mb-8">
+  <header class="mb-10">
     <BackButton href="/" label="Index" />
-    <h1 class="mt-8">Projects</h1>
+    <h1 class="mt-8 w-fit [view-transition-name:title-projects]">Projects</h1>
     <p class="mt-1 text-zinc-500">
-      Listed below are the projects I’ve participated in, dedicating significant
-      time and effort towards their creation, maintenance, and enhancement.
+      Tools along the way from your laptop to production, and one for the trip
+      between your devices.
     </p>
   </header>
 
-  <ProjectList projects={projects} />
+  <ProjectList projects={projects} branch={branch} />
 </Layout>

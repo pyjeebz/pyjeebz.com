@@ -1,0 +1,48 @@
+---
+// "(more)": a quiet button that, pressed, gives way to the aside it was
+// holding, which settles in out of a slight blur. Plain script, so the home
+// page ships no framework for it.
+//
+// The script comes first: Astro renders it where the component is used, and
+// whitespace after it would show as a space before the sentence's full stop.
+// Before the markup, it merges with the space that's already there.
+---
+
+<script>
+  import { sound } from "../lib/sound";
+
+  for (const button of document.querySelectorAll<HTMLElement>("[data-more]")) {
+    button.addEventListener("click", () => {
+      const aside = button.nextElementSibling as HTMLElement | null;
+      if (!aside) return;
+      aside.hidden = false;
+      button.remove();
+      sound.reveal();
+    });
+  }
+</script>
+
+<style>
+  .aside:not([hidden]) {
+    animation: aside-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes aside-in {
+    from {
+      opacity: 0;
+      filter: blur(2px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aside:not([hidden]) {
+      animation: none;
+    }
+  }
+</style>
+
+<span class="more"
+  ><button
+    type="button"
+    class="cursor-help align-baseline text-zinc-600 underline decoration-dotted underline-offset-2 transition-colors hover:text-black"
+    data-more>(more)</button
+  ><span class="aside text-zinc-600" hidden><slot /></span></span
+>

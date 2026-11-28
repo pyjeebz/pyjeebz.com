@@ -21,18 +21,17 @@ const writings = entries
   .sort((a, b) => b.sortKey - a.sortKey);
 ---
 
-<Layout
-  title="Writings | Mujeeb"
-  description="Mujeeb’s thoughts and writings."
->
+<Layout title="Writings | Mujeeb" description="Mujeeb’s thoughts and writings.">
   <header class="mb-8">
     <BackButton href="/" label="Index" />
-    <h1 class="mt-8 mb-0.5">Writings</h1>
+    <h1 class="mt-8 mb-0.5 w-fit [view-transition-name:title-writings]">
+      Writings
+    </h1>
     <p class="text-zinc-500">
       Essays, notes, and things I’m thinking about. Subscribe via <a
         href="/feed.xml"
         data-cuelume-toggle="page"
-        class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+        class="text-black underline decoration-zinc-300 underline-offset-2 transition-colors hover:decoration-transparent"
         >RSS</a
       >.
     </p>

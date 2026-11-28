@@ -487,7 +487,7 @@ export function SignatureWall() {
                     href={`https://github.com/${selected.login}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="truncate underline decoration-zinc-300 underline-offset-2 hover:text-black hover:no-underline"
+                    className="truncate underline decoration-zinc-300 underline-offset-2 transition-colors hover:text-black hover:decoration-transparent"
                   >
                     @{selected.login}
                   </a>

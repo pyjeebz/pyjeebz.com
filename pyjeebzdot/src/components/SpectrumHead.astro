@@ -43,4 +43,13 @@ import {
       .querySelector('meta[name="theme-color"]')
       ?.setAttribute("content", PAGE_COLORS.dark);
   }
+
+  // The home page's spectrum rises on the first visit of a session; coming
+  // back to it, it's simply there (components/Footer.astro).
+  if (location.pathname === "/") {
+    try {
+      if (sessionStorage.getItem("pyjeebz:risen")) root.dataset.risen = "";
+      else sessionStorage.setItem("pyjeebz:risen", "1");
+    } catch {}
+  }
 </script>

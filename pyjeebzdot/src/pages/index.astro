@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { MoreInline } from "../components/MoreInline";
-import { SoundToggle } from "../components/SoundToggle";
+import MoreInline from "../components/MoreInline.astro";
+import SoundToggle from "../components/SoundToggle.astro";
 ---
 
 <Layout isHomePage={true}>
@@ -14,14 +14,14 @@ import { SoundToggle } from "../components/SoundToggle";
     <p>
       I’m a Software Engineer interested in research, systems, and anything
       computational based in Canada. I reverse-engineer complex challenges and
-      reverse-code them into elegant solutions <MoreInline client:load
+      reverse-code them into elegant solutions <MoreInline
         >(computational thinker)</MoreInline
       >.
     </p>
 
     <p>
       Currently, I am exploring every aspect of computing. I make research on
-      problems and I build solutions for it <MoreInline client:load
+      problems and I build solutions for it <MoreInline
         >(interested in robotics, search, infrastructure, and AI/ML)</MoreInline
       >.
     </p>
@@ -32,24 +32,24 @@ import { SoundToggle } from "../components/SoundToggle";
       Read my <a
         href="/writings"
         data-cuelume-toggle="page"
-        class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+        class="text-black underline decoration-zinc-300 underline-offset-2 transition-colors [view-transition-name:title-writings] hover:decoration-transparent"
         >writings</a
       >, browse the <a
         href="/projects"
         data-cuelume-toggle="page"
-        class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+        class="text-black underline decoration-zinc-300 underline-offset-2 transition-colors [view-transition-name:title-projects] hover:decoration-transparent"
         >projects</a
       > I’ve built, or sign my <a
         href="/guestbook"
         data-cuelume-toggle="page"
-        class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+        class="text-black underline decoration-zinc-300 underline-offset-2 transition-colors [view-transition-name:title-guestbook] hover:decoration-transparent"
         >guestbook</a
       >. Wanna discuss a project or just say hi? <a
         target="_blank"
         rel="noopener noreferrer"
         href="https://cal.com/pyjeebz"
         data-cuelume-hover="tick"
-        class="underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+        class="underline decoration-zinc-300 underline-offset-2 transition-colors hover:decoration-transparent"
         >Let’s grab a tea</a
       >, I don’t drink coffee.
     </p>
@@ -60,23 +60,23 @@ import { SoundToggle } from "../components/SoundToggle";
         rel="noopener noreferrer"
         href="https://x.com/pyjeebz"
         data-cuelume-hover="tick"
-        class="-mx-3 px-3 py-3 text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+        class="-mx-3 px-3 py-3 text-black underline decoration-zinc-300 underline-offset-2 transition-colors hover:decoration-transparent"
         >X</a
       >, <a
         target="_blank"
         rel="noopener noreferrer"
         href="https://github.com/pyjeebz"
         data-cuelume-hover="tick"
-        class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+        class="text-black underline decoration-zinc-300 underline-offset-2 transition-colors hover:decoration-transparent"
         >GitHub</a
       >, or reach me via <a
         href="mailto:lawalsakamujeeb@gmail.com"
         data-cuelume-hover="tick"
-        class="text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline"
+        class="text-black underline decoration-zinc-300 underline-offset-2 transition-colors hover:decoration-transparent"
         >email</a
       >.
     </p>
 
-    <SoundToggle client:load />
+    <SoundToggle />
   </div>
 </Layout>

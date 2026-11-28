@@ -36,7 +36,7 @@ article {
   }
 
   a {
-    @apply text-black underline decoration-zinc-300 underline-offset-2 hover:no-underline;
+    @apply text-black underline decoration-zinc-300 underline-offset-2 transition-colors hover:decoration-transparent;
   }
 
   /* heading anchors from rehype-autolink-headings */

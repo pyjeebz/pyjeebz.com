@@ -145,7 +145,9 @@ export function Guestbook() {
         animate={
           open ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }
         }
-        transition={reduce ? { duration: 0 } : { duration: 0.3, ease: "easeOut" }}
+        transition={
+          reduce ? { duration: 0 } : { duration: 0.3, ease: "easeOut" }
+        }
         inert={!open}
         className="overflow-hidden"
       >
@@ -485,7 +487,7 @@ function SigningPad(props: SigningPadProps) {
               <button
                 type="button"
                 onClick={signOut}
-                className="shrink-0 underline decoration-zinc-300 underline-offset-2 transition-colors hover:text-black hover:no-underline"
+                className="shrink-0 underline decoration-zinc-300 underline-offset-2 transition-colors hover:text-black hover:decoration-transparent"
               >
                 Sign out
               </button>
