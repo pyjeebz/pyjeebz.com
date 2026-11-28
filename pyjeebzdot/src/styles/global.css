@@ -77,6 +77,8 @@
 @layer base {
   html {
     scrollbar-gutter: stable;
+    /* Anchor jumps land clear of the sticky blur at the top. */
+    scroll-padding-top: 5rem;
   }
 
   /* The home page fits the screen and its spectrum runs edge to edge, so an
@@ -162,18 +164,52 @@
   }
 }
 
-/* Page to page, the browser crossfades instead of cutting, so moving between
-   the home page's spectrum and the plainer pages is a dissolve, not a jump.
-   Browsers without cross-document view transitions just navigate. */
+/* Page to page, the browser transitions instead of cutting (browsers without
+   cross-document view transitions just navigate):
+
+   - the old page lets go quickly and the new one settles in, rising a few
+     pixels as it fades up;
+   - a page's title carries over from the word that linked to it on the home
+     page (title-writings, title-projects, title-guestbook), flying from the
+     sentence to the heading and back;
+   - the film grain stays put: it's the same on every page, so the new page's
+     is shown at once rather than crossfading (which would double it) or
+     sliding between the two pages' nudges. */
 @media (prefers-reduced-motion: no-preference) {
   @view-transition {
     navigation: auto;
   }
 
-  ::view-transition-old(root),
+  ::view-transition-old(root) {
+    animation: 140ms ease-in both vt-out;
+  }
   ::view-transition-new(root) {
-    animation-duration: 0.22s;
-    animation-timing-function: ease-out;
+    animation: 320ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both vt-in;
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 420ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  ::view-transition-group(grain),
+  ::view-transition-new(grain) {
+    animation: none;
+  }
+  ::view-transition-old(grain) {
+    display: none;
+  }
+
+  @keyframes vt-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes vt-in {
+    from {
+      opacity: 0;
+      translate: 0 6px;
+    }
   }
 }
 

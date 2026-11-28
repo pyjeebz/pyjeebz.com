@@ -56,6 +56,18 @@ export default defineConfig({
     },
   },
 
+  // Every internal link loads its page while it's hovered (or touched), and
+  // where the browser has speculation rules, renders it too, so the click
+  // lands on a page that's already there and the view transition starts at
+  // once.
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "hover",
+  },
+  experimental: {
+    clientPrerender: true,
+  },
+
   // Crawlers guess /sitemap.xml; the sitemap integration emits an index instead.
   redirects: {
     "/sitemap.xml": "/sitemap-index.xml",

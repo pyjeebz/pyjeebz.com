@@ -1,29 +1,298 @@
 ---
-type Project = { name: string; tagline: string; href: string };
+// The projects as a route: a line down the gutter from a laptop to
+// production, a station for each tool along it, and each station a row of
+// big serif type. One project off that way hangs from a dashed branch at the
+// end.
+//
+// Scrolling fills the line in the accent and lights the stations it reaches.
+// Hovering a row quiets the others, leans its name into italic and steps it
+// forward, and a small label trails the pointer saying where it goes. Only
+// the type dims, so the line always reads whole.
+//
+// Without JS, or with reduced motion, the line is simply drawn.
+
+export type Project = {
+  name: string;
+  tagline: string;
+  href: string;
+  stage: string; // where it sits along the way
+  kind: string;
+  year: number;
+};
 
 interface Props {
   projects: Project[];
-  class?: string;
+  branch?: Project;
 }
 
-const { projects, class: className } = Astro.props;
+const { projects, branch } = Astro.props;
+
+// The link's destination as a short label: the site's own host, or "github".
+const hostOf = (href: string) => {
+  const host = new URL(href).hostname.replace(/^www\./, "");
+  return host === "github.com" ? "github" : host;
+};
+
+const stops = [
+  ...projects.map((p, i) => ({
+    ...p,
+    kicker: `${String(i + 1).padStart(2, "0")} · ${p.stage}`,
+    off: false,
+  })),
+  ...(branch
+    ? [{ ...branch, kicker: `Off the line · ${branch.stage}`, off: true }]
+    : []),
+];
+const last = projects.length - 1;
 ---
 
-<ul class:list={["flex flex-col divide-y divide-zinc-100", className]}>
+<ol class="route" data-route>
   {
-    projects.map((p) => (
-      <li>
+    stops.map((p, i) => (
+      <li
+        class:list={[
+          "stop relative grid grid-cols-[16px_1fr] gap-x-5",
+          p.off && "off",
+        ]}
+        data-stop
+      >
+        {i < last && (
+          <>
+            <span class="seg bg-zinc-200" aria-hidden="true" />
+            <span class="seg run bg-accent" aria-hidden="true" data-run />
+          </>
+        )}
+        {i === last && branch && (
+          <svg
+            class="branch text-zinc-300"
+            viewBox="0 0 40 100"
+            preserveAspectRatio="none"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M8 0 C8 60, 36 40, 36 100"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-dasharray="3 5"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            />
+          </svg>
+        )}
+
+        <span class="dot" aria-hidden="true" />
+
         <a
           href={p.href}
-          target={p.href.startsWith("http") ? "_blank" : undefined}
-          class="group flex items-baseline justify-between gap-6 py-2"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cuelume-hover="tick"
+          data-host={hostOf(p.href)}
+          class="row grid grid-cols-[1fr_auto] items-baseline gap-x-3 border-b border-zinc-200 pt-4 pb-5"
         >
-          <span class="shrink-0 transition-colors group-hover:text-zinc-500">
-            {p.name}
+          <span class="min-w-0">
+            <span class="block font-mono text-[11px] tracking-wider text-zinc-400 uppercase">
+              {p.kicker}
+            </span>
+            <span class="name mt-1.5 block font-serif text-[2rem] leading-none tracking-tight text-black sm:text-[2.5rem]">
+              {p.name}
+            </span>
+            <span class="mt-2 block text-sm text-zinc-500">{p.tagline}</span>
           </span>
-          <span class="text-right text-zinc-500">{p.tagline}</span>
+          <span class="self-center text-right font-mono text-[11px] leading-5 text-zinc-400">
+            {p.kind}
+            <br />
+            {p.year}
+          </span>
         </a>
       </li>
     ))
   }
-</ul>
+</ol>
+
+<span
+  class="pointer-events-none fixed top-0 left-0 z-50 rounded-full bg-black px-2.5 py-1 font-mono text-[11px] text-white opacity-0 transition-opacity duration-200"
+  aria-hidden="true"
+  data-route-tag></span>
+
+<style>
+  /* A station sits level with the middle of its name: the row's top padding,
+     the kicker's line, the gap under it, then half the name. */
+  .route {
+    --dot: 16px;
+    --dot-y: calc(1rem + 16.5px + 0.375rem + 1rem - var(--dot) / 2);
+  }
+  @media (min-width: 640px) {
+    .route {
+      --dot-y: calc(1rem + 16.5px + 0.375rem + 1.25rem - var(--dot) / 2);
+    }
+  }
+
+  .dot {
+    position: relative;
+    z-index: 1;
+    margin-top: var(--dot-y);
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: 999px;
+    border: 2px solid var(--color-zinc-300);
+    background: var(--color-page);
+    transition:
+      background-color 0.3s,
+      border-color 0.3s,
+      scale 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .off .dot {
+    border-style: dashed;
+  }
+  .stop[data-lit] .dot,
+  .stop:hover .dot {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+  }
+  .off[data-lit] .dot,
+  .off:hover .dot {
+    background: var(--color-page);
+  }
+  .stop:hover .dot {
+    scale: 1.2;
+  }
+
+  /* Each segment runs from this station's centre to the next one's. */
+  .seg {
+    position: absolute;
+    left: 7px;
+    top: calc(var(--dot-y) + var(--dot) / 2);
+    height: 100%;
+    width: 2px;
+    border-radius: 2px;
+  }
+  .run {
+    transform-origin: top;
+    scale: 1 0;
+  }
+
+  .branch {
+    position: absolute;
+    left: 0;
+    top: calc(var(--dot-y) + var(--dot) / 2);
+    width: 40px;
+    height: 100%;
+    overflow: visible;
+  }
+  .off {
+    padding-left: 28px;
+  }
+
+  .name {
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 72;
+    transition: translate 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .row {
+    transition: opacity 0.3s;
+  }
+
+  @media (hover: hover) {
+    .route:has(.row:hover) .row:not(:hover) {
+      opacity: 0.28;
+    }
+    .row:hover .name {
+      translate: 6px 0;
+      font-style: italic;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dot,
+    .name,
+    .row {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const stops = [...document.querySelectorAll<HTMLElement>("[data-stop]")];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  // The line fills to a reading point that moves from just below the middle
+  // of the screen to its bottom edge as the page runs out (so the last
+  // station can be reached), lighting each station it passes.
+  if (!reduce) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const room = document.documentElement.scrollHeight - innerHeight;
+      const end = room > 0 ? scrollY / room : 1;
+      const mark = innerHeight * (0.55 + 0.45 * end);
+      for (const stop of stops) {
+        const dot = stop.querySelector(".dot")!.getBoundingClientRect();
+        const centre = dot.top + dot.height / 2;
+        stop.toggleAttribute("data-lit", centre <= mark);
+        const run = stop.querySelector<HTMLElement>("[data-run]");
+        if (!run) continue;
+        // Its layout length: unlike its box on screen, unaffected by the
+        // scale this sets.
+        const length = run.offsetHeight || 1;
+        const t = Math.min(1, Math.max(0, (mark - centre) / length));
+        run.style.scale = `1 ${t}`;
+      }
+    };
+    const onScroll = () => {
+      if (!queued) requestAnimationFrame(update);
+      queued = true;
+    };
+    update();
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onScroll);
+  }
+
+  // The italic only shows on hover; fetch it while the page is idle so the
+  // first hover doesn't wait on the font.
+  if (fine) {
+    const warm = () => document.fonts.load("italic 40px Newsreader");
+    if ("requestIdleCallback" in window) requestIdleCallback(warm);
+    else setTimeout(warm, 1500);
+  }
+
+  // A label trailing the pointer over a row, easing after it, saying where
+  // the row goes.
+  const tag = document.querySelector<HTMLElement>("[data-route-tag]");
+  if (tag && fine) {
+    let x = 0;
+    let y = 0;
+    let tx = 0;
+    let ty = 0;
+    let raf: number | undefined;
+    const step = () => {
+      const k = reduce ? 1 : 0.18;
+      x += (tx - x) * k;
+      y += (ty - y) * k;
+      tag.style.transform = `translate(${x + 14}px, ${y + 14}px)`;
+      raf =
+        Math.abs(tx - x) + Math.abs(ty - y) > 0.3
+          ? requestAnimationFrame(step)
+          : undefined;
+    };
+    for (const row of document.querySelectorAll<HTMLElement>("[data-host]")) {
+      row.addEventListener("pointerenter", (event) => {
+        tag.textContent = `${row.dataset.host} ↗`;
+        if (tag.style.opacity !== "1") {
+          x = tx = event.clientX;
+          y = ty = event.clientY;
+        }
+        tag.style.opacity = "1";
+        step();
+      });
+      row.addEventListener("pointermove", (event) => {
+        tx = event.clientX;
+        ty = event.clientY;
+        raf ??= requestAnimationFrame(step);
+      });
+      row.addEventListener("pointerleave", () => (tag.style.opacity = "0"));
+    }
+  }
+</script>

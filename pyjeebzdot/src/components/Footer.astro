@@ -175,6 +175,12 @@ const COLUMNS = [
     }
   }
 
+  /* Once a session (components/SpectrumHead.astro): returning to the home
+     page doesn't replay it. */
+  :global(:root[data-risen]) [data-footer-spectrum] {
+    animation: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     [data-footer-spectrum] {
       animation: none;
@@ -286,49 +292,72 @@ const COLUMNS = [
       const n = Number.parseInt(hex.slice(1), 16);
       return [n >> 16, (n >> 8) & 255, n & 255];
     };
-    const mix = (a: number[], b: number[], t: number) =>
-      a.map((v, i) => v + (b[i] - v) * t);
-
     // A palette's colours as painted: its eight stops, then its accent.
     const colorsOf = (p: number) => [...PALETTES[p], ACCENTS[p]].map(toRgb);
 
     let index = 0;
-    let shown = colorsOf(0); // what's on screen, mid-fade included
-    let fade: number | undefined;
 
     // The page glow reads palette colours through --glow-1…6, in their
     // mapping: 1–2 top left, 3–4 right, 5–6 bottom.
     const glow = document.querySelector<HTMLElement>("[data-spectrum-glow]");
+    const glowOpacity = glow ? Number(getComputedStyle(glow).opacity) : 0;
     const GLOW_STOPS = [0, 1, 4, 5, 6, 2];
 
+    const css = (c: number[]) => `rgb(${c.map(Math.round).join(",")})`;
+
+    // The spectrum's stops and the glow's colours: one repaint of each.
     const paint = (colors: number[][]) => {
-      const css = colors.map((c) => `rgb(${c.map(Math.round).join(",")})`);
       stops.forEach((at, i) =>
-        at.forEach((stop) => stop.setAttribute("stop-color", css[i])),
+        at.forEach((stop) => stop.setAttribute("stop-color", css(colors[i]))),
       );
       GLOW_STOPS.forEach((stop, i) =>
-        glow?.style.setProperty(`--glow-${i + 1}`, css[stop]),
+        glow?.style.setProperty(`--glow-${i + 1}`, css(colors[stop])),
       );
-      root.style.setProperty("--color-accent", css[8]);
     };
 
-    // Crossfade the spectrum, glow and accent to palette p.
+    // Both are heavily blurred, so tweening their colours frame by frame
+    // re-blurs them every frame. Instead, what's showing is frozen as a copy
+    // laid over the top (its gradient ids renamed so it keeps its own
+    // colours), the new palette is painted underneath once, and the copy
+    // fades out: opacity only, on the compositor. The copy fades as an HTML
+    // box around the SVG, since Chrome won't composite an animation on the
+    // SVG element itself.
+    let ghosts = 0;
+    const dissolve = (fadeMs: number) => {
+      const timing = { duration: fadeMs, easing: "ease-out" };
+      const copy = svg.cloneNode(true) as SVGSVGElement;
+      copy.innerHTML = copy.innerHTML.replaceAll(
+        "footer-",
+        `footer-g${++ghosts}-`,
+      );
+      const ghost = document.createElement("div");
+      ghost.className = "pointer-events-none absolute inset-0";
+      ghost.append(copy);
+      spectrum.append(ghost);
+      const drop = () => ghost.remove();
+      ghost
+        .animate([{ opacity: 1 }, { opacity: 0 }], timing)
+        .finished.then(drop, drop);
+
+      if (!glow) return;
+      const old = glow.cloneNode(true) as HTMLElement;
+      old.removeAttribute("data-spectrum-glow");
+      glow.after(old);
+      const dropGlow = () => old.remove();
+      old
+        .animate([{ opacity: glowOpacity }, { opacity: 0 }], timing)
+        .finished.then(dropGlow, dropGlow);
+      glow.animate([{ opacity: 0 }, { opacity: glowOpacity }], timing);
+    };
+
+    // Crossfade the spectrum and glow to palette p. The accent is set at
+    // once: on this page it only shows in a selection or a focus ring, and
+    // tweening a property on the root restyles the whole page every frame.
     const show = (p: number, fadeMs: number) => {
-      const from = shown;
       const to = colorsOf(p);
-      if (fade !== undefined) cancelAnimationFrame(fade);
-      if (fadeMs <= 0) {
-        paint((shown = to));
-        return;
-      }
-      const start = performance.now();
-      const step = (now: number) => {
-        const t = Math.min(1, (now - start) / fadeMs);
-        const eased = 1 - (1 - t) ** 2;
-        paint((shown = from.map((c, i) => mix(c, to[i], eased))));
-        fade = t < 1 ? requestAnimationFrame(step) : undefined;
-      };
-      fade = requestAnimationFrame(step);
+      if (fadeMs > 0) dissolve(fadeMs);
+      paint(to);
+      root.style.setProperty("--color-accent", css(to[8]));
     };
 
     // The caption: the palette's name and place, in an ink that reads on its
@@ -361,9 +390,11 @@ const COLUMNS = [
       caption(p, animate);
     };
 
-    // Their swatch click: a quick 1.02 swell from the bottom and back.
+    // Their swatch click: a quick 1.02 swell from the bottom and back. It
+    // swells the spectrum's box (an HTML element, so it's composited), which
+    // carries any fading copy with it.
     const pulse = () =>
-      svg.animate(
+      spectrum.animate(
         [
           { transform: "scale(1)" },
           { transform: "scale(1.02)" },

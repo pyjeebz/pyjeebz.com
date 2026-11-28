@@ -16,6 +16,9 @@ interface Props {
   // The page draws its own full-screen view: no column, blur or footer.
   fullscreen?: boolean;
   articleData?: { publishedAt: Date; title: string; image?: string };
+  // Fonts this page shows above the fold, beyond Geist and Geist Mono, so
+  // they're fetched early instead of swapping in late.
+  fonts?: string[];
 }
 
 const {
@@ -28,6 +31,7 @@ const {
   isHomePage = false,
   fullscreen = false,
   articleData,
+  fonts = [],
 } = Astro.props;
 
 const currentPageAbsoluteUrl = new URL(
@@ -79,13 +83,17 @@ const ogImage = ogImageUrl || `${siteConfig.url}/images/og-image.png`;
       type="font/woff2"
       crossorigin
     />
-    <link
-      rel="preload"
-      href="/fonts/newsreader-italic.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+    {
+      fonts.map((href) => (
+        <link
+          rel="preload"
+          href={href}
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      ))
+    }
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -220,7 +228,7 @@ const ogImage = ogImageUrl || `${siteConfig.url}/images/og-image.png`;
     }
 
     <!-- Film grain over everything, so the gradients read as printed. -->
-    <div class="grain" aria-hidden="true"></div>
+    <div class="grain [view-transition-name:grain]" aria-hidden="true"></div>
 
     <script>
       // cuelume's delegated listeners cover [data-cuelume-*] elements anywhere
